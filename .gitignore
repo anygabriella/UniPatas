@@ -1,0 +1,20 @@
+# Build
+target/
+
+# Compilados
+*.class
+
+# Logs
+*.log
+
+# Banco de dados local
+data/
+*.db
+
+# IDEs
+.idea/
+.vscode/
+
+# Sistema
+.DS_Store
+Thumbs.db
