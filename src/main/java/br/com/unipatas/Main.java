@@ -2,60 +2,135 @@ package br.com.unipatas;
 
 import java.util.*;
 
+import br.com.unipatas.dao.UsuarioDAO;
+import br.com.unipatas.model.Usuario;
+
 public class Main {
     public static void main(String[] args) {
-        try {
-            UsuarioDAO dao = new UsuarioDAO();
+        Scanner sc = new Scanner(System.in);
+        try{
+            UsuarioDAO usuarioDAO = new UsuarioDAO();
+            int opcao;
+            do{
+                System.out.println("\n--- MENU CRUD USUÁRIO ---");
+                System.out.println("1 - Criar");
+                System.out.println("2 - Ler");
+                System.out.println("3 - Alterar");
+                System.out.println("0 - Sair");
+                System.out.print("Escolha: ");
+                opcao = sc.nextInt();
+                sc.nextLine();
+                switch (opcao) {
+                    case 1:
+                        System.out.println("Nome: ");
+                        String nome = sc.nextLine();
+                        System.out.println("CPF: ");
+                        String cpf = sc.nextLine();
+                        System.out.println("Email: ");
+                        String email = sc.nextLine();
+                        System.out.println("Senha: ");
+                        String senha = sc.nextLine();
+                        System.out.println("Telefone: ");
+                        String telefone = sc.nextLine();
+                        System.out.println("Cidade: ");
+                        String cidade = sc.nextLine();
+                        System.out.println("Estado: ");
+                        String estado = sc.nextLine();
 
-            System.out.println("--- 1. TESTE DE CRIAÇÃO (CREATE) ---");
+                        Usuario i = new Usuario (nome, cpf, email, senha, telefone, cidade, estado);
+                        int novoUsuarioID = usuarioDAO.create(i);
 
-            String senhaCripto1 = "senha123"; //futuramente, as senhas devem ser criptografadas antes de serem armazenadas
-            String senhaCripto2 = "doguinho456";
+                        System.out.println("---Usuário criado com sucesso---");
+                        System.out.println("ID: " + novoUsuarioID);
+                        System.out.println("Nome: " + nome);
 
-            Usuario u1 = new Usuario("João Silva", "123.456.789-00", "joao@email.com", 
-                                     senhaCripto1, "11988887777", "São Paulo", "SP");
-            
-            Usuario u2 = new Usuario("Maria ONG", "987.654.321-11", "contato@ong.org", 
-                                     senhaCripto2, "21977776666", "Rio de Janeiro", "RJ");
+                        break;
+                    case 2:
+                        System.out.println("ID do usuário: ");
+                        int usuarioID = sc.nextInt();
+                        Usuario busca = usuarioDAO.read(usuarioID);
+                        if(busca != null){
+                            System.out.println("ID: " + busca.getId());
+                            System.out.println("Nome: " + busca.getNome());
+                            System.out.println("CPF: " + busca.getCpf());
+                            System.out.println("Email: " + busca.getEmail());
+                            System.out.println("Telefone: " + busca.getTelefone());
+                            System.out.println("Cidade: " + busca.getCidade());
+                            System.out.println("Estado: " + busca.getEstado());
+                        } else{
+                            System.out.println("---Usuário não encontrado---");
+                        }
+                        break;
+                    case  3:
+                        System.out.println("ID do usuário para alteração: ");
+                        int idUpdate = sc.nextInt();
+                        sc.nextLine();
+                        Usuario usuarioUpdate = usuarioDAO.read(idUpdate);
+                        if(usuarioUpdate != null){
+                            System.out.println("---Novos dados---");
+                            System.out.println("Nome: ");
+                            nome = sc.nextLine();
+                            System.out.println("CPF: ");
+                            cpf = sc.nextLine();
+                            System.out.println("Email: ");
+                            email = sc.nextLine();
+                            System.out.println("Senha: ");
+                            senha = sc.nextLine();
+                            System.out.println("Telefone: ");
+                            telefone = sc.nextLine();
+                            System.out.println("Cidade: ");
+                            cidade = sc.nextLine();
+                            System.out.println("Estado: ");
+                            estado = sc.nextLine();
+                            Usuario usuarioAtualizado = new Usuario(idUpdate, nome, cpf, email, senha, telefone, cidade, estado);
+                            boolean verificaUpdate = usuarioDAO.update(usuarioAtualizado);
+                            if(verificaUpdate){
+                                System.out.println("---Usuário atualizado com sucesso---");
+                            } else{
+                                System.out.println("---Erro na atualização---");
+                            }
+                        }else{
+                            System.out.println("---Usuário não encontrado---");
+                        }
+                        break;  
+                    case 4:
+                        System.out.println("ID do usuário para remoção: ");
+                        int idRemovido = sc.nextInt();
+                        sc.nextLine();
+                        Usuario usuarioDelete = usuarioDAO.read(idRemovido);
+                        if(usuarioDelete != null){
+                            System.out.println("Deseja realmente excluir "  + usuarioDelete.getNome() + "? (S/N)");
+                            char resp = sc.nextLine().toUpperCase().charAt(0);
+                            if (resp == 'S'){
+                                usuarioDAO.delete(idRemovido);
+                                System.out.println("---Usuário Removido---");
+                            }else if (resp == 'N'){
+                                System.out.println("---Operação cancelada---");
+                            }else {
+                                System.out.println("---Comando Inválido---");
+                            }
+                            
+                        }else{
+                            System.out.println("---Usuário não encontrado---");
+                        }
+                        break;
+                    case 0:
 
-            int id1 = dao.create(u1);
-            int id2 = dao.create(u2);
-            System.out.println("Usuário 1 criado com ID: " + id1);
-            System.out.println("Usuário 2 criado com ID: " + id2);
+                        break;
+                    default:
+                        System.out.println("---Comando Inválido---");
+                        break;
+                }
 
-            System.out.println("\n--- 2. TESTE DE LEITURA (READ) ---");
-            Usuario busca = dao.read(id1);
-            if (busca != null) {
-                System.out.println("Encontrado: " + busca.mostrar());
-            } else {
-                System.out.println("Usuário não encontrado.");
-            }
+        } while(opcao != 0);
 
-            System.out.println("\n--- 3. TESTE DE ATUALIZAÇÃO (UPDATE) ---");
-            // Vamos mudar a cidade do João (ID 1)
-            if (busca != null) {
-                busca.setCidade("Campinas");
-                boolean atualizou = dao.update(busca);
-                System.out.println("Atualização de cidade realizada? " + atualizou);
-                
-                // Verificar se mudou mesmo
-                Usuario buscaNovamente = dao.read(id1);
-                System.out.println("Dados atualizados: " + buscaNovamente.mostrar());
-            }
-
-            System.out.println("\n--- 4. TESTE DE EXCLUSÃO (DELETE) ---");
-            boolean deletou = dao.delete(id2);
-            System.out.println("Usuário 2 deletado? " + deletou);
-
-            // Tentar ler o deletado
-            Usuario buscaDeletado = dao.read(id2);
-            System.out.println("Busca por usuário deletado: " + (buscaDeletado == null ? "Nulo (Correto)" : "Erro"));
-
-        } catch (Exception e) {
+        }catch(Exception e){
             System.err.println("Erro no sistema: " + e.getMessage());
             e.printStackTrace();
         }
+        
+        
+            
+        sc.close();
     }
-
-    
 }
