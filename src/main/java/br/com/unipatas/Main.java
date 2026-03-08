@@ -8,36 +8,37 @@ import br.com.unipatas.model.Usuario;
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        try{
+        try {
             UsuarioDAO usuarioDAO = new UsuarioDAO();
             int opcao;
-            do{
+            do {
                 System.out.println("\n--- MENU CRUD USUÁRIO ---");
                 System.out.println("1 - Criar");
                 System.out.println("2 - Ler");
                 System.out.println("3 - Alterar");
+                System.out.println("4 - Remover");
                 System.out.println("0 - Sair");
                 System.out.print("Escolha: ");
                 opcao = sc.nextInt();
                 sc.nextLine();
                 switch (opcao) {
                     case 1:
-                        System.out.println("Nome: ");
+                        System.out.print("Nome: ");
                         String nome = sc.nextLine();
-                        System.out.println("CPF: ");
+                        System.out.print("CPF: ");
                         String cpf = sc.nextLine();
-                        System.out.println("Email: ");
+                        System.out.print("Email: ");
                         String email = sc.nextLine();
-                        System.out.println("Senha: ");
+                        System.out.print("Senha: ");
                         String senha = sc.nextLine();
-                        System.out.println("Telefone: ");
+                        System.out.print("Telefone: ");
                         String telefone = sc.nextLine();
-                        System.out.println("Cidade: ");
+                        System.out.print("Cidade: ");
                         String cidade = sc.nextLine();
-                        System.out.println("Estado: ");
+                        System.out.print("Estado: ");
                         String estado = sc.nextLine();
 
-                        Usuario i = new Usuario (nome, cpf, email, senha, telefone, cidade, estado);
+                        Usuario i = new Usuario(nome, cpf, email, senha, telefone, cidade, estado);
                         int novoUsuarioID = usuarioDAO.create(i);
 
                         System.out.println("---Usuário criado com sucesso---");
@@ -49,7 +50,7 @@ public class Main {
                         System.out.println("ID do usuário: ");
                         int usuarioID = sc.nextInt();
                         Usuario busca = usuarioDAO.read(usuarioID);
-                        if(busca != null){
+                        if (busca != null) {
                             System.out.println("ID: " + busca.getId());
                             System.out.println("Nome: " + busca.getNome());
                             System.out.println("CPF: " + busca.getCpf());
@@ -57,16 +58,16 @@ public class Main {
                             System.out.println("Telefone: " + busca.getTelefone());
                             System.out.println("Cidade: " + busca.getCidade());
                             System.out.println("Estado: " + busca.getEstado());
-                        } else{
+                        } else {
                             System.out.println("---Usuário não encontrado---");
                         }
                         break;
-                    case  3:
+                    case 3:
                         System.out.println("ID do usuário para alteração: ");
                         int idUpdate = sc.nextInt();
                         sc.nextLine();
                         Usuario usuarioUpdate = usuarioDAO.read(idUpdate);
-                        if(usuarioUpdate != null){
+                        if (usuarioUpdate != null) {
                             System.out.println("---Novos dados---");
                             System.out.println("Nome: ");
                             nome = sc.nextLine();
@@ -82,35 +83,36 @@ public class Main {
                             cidade = sc.nextLine();
                             System.out.println("Estado: ");
                             estado = sc.nextLine();
-                            Usuario usuarioAtualizado = new Usuario(idUpdate, nome, cpf, email, senha, telefone, cidade, estado);
+                            Usuario usuarioAtualizado = new Usuario(idUpdate, nome, cpf, email, senha, telefone, cidade,
+                                    estado);
                             boolean verificaUpdate = usuarioDAO.update(usuarioAtualizado);
-                            if(verificaUpdate){
+                            if (verificaUpdate) {
                                 System.out.println("---Usuário atualizado com sucesso---");
-                            } else{
+                            } else {
                                 System.out.println("---Erro na atualização---");
                             }
-                        }else{
+                        } else {
                             System.out.println("---Usuário não encontrado---");
                         }
-                        break;  
+                        break;
                     case 4:
                         System.out.println("ID do usuário para remoção: ");
                         int idRemovido = sc.nextInt();
                         sc.nextLine();
                         Usuario usuarioDelete = usuarioDAO.read(idRemovido);
-                        if(usuarioDelete != null){
-                            System.out.println("Deseja realmente excluir "  + usuarioDelete.getNome() + "? (S/N)");
+                        if (usuarioDelete != null) {
+                            System.out.println("Deseja realmente excluir " + usuarioDelete.getNome() + "? (S/N)");
                             char resp = sc.nextLine().toUpperCase().charAt(0);
-                            if (resp == 'S'){
+                            if (resp == 'S') {
                                 usuarioDAO.delete(idRemovido);
                                 System.out.println("---Usuário Removido---");
-                            }else if (resp == 'N'){
+                            } else if (resp == 'N') {
                                 System.out.println("---Operação cancelada---");
-                            }else {
+                            } else {
                                 System.out.println("---Comando Inválido---");
                             }
-                            
-                        }else{
+
+                        } else {
                             System.out.println("---Usuário não encontrado---");
                         }
                         break;
@@ -122,15 +124,13 @@ public class Main {
                         break;
                 }
 
-        } while(opcao != 0);
+            } while (opcao != 0);
 
-        }catch(Exception e){
+        } catch (Exception e) {
             System.err.println("Erro no sistema: " + e.getMessage());
             e.printStackTrace();
         }
-        
-        
-            
+
         sc.close();
     }
 }
