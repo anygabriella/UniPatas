@@ -1,51 +1,105 @@
 package br.com.unipatas;
 
-import br.com.unipatas.view.UsuarioCadastroView;
-import br.com.unipatas.view.UsuarioRemoverView;
-import br.com.unipatas.view.UsuarioAtualizarView;
-import br.com.unipatas.view.UsuarioBuscaView;
+import br.com.unipatas.view.abrigo.AbrigoGerenciamentoView;
+import br.com.unipatas.view.adocao.AdocaoGerenciamentoView;
+import br.com.unipatas.view.animal.AnimalGerenciamentoView;
+import br.com.unipatas.view.campanha.CampanhaGerenciamentoView;
+import br.com.unipatas.view.usuario.UsuarioGerenciamentoView;
 import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 public class MainFX extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("UniPatas - Gerenciamento de Usuários");
+        primaryStage.setTitle("UniPatas - Sistema de Adoção");
 
-        TabPane tabPane = new TabPane();
+        primaryStage.setResizable(false);
+        // BorderPane divide a tela em: Topo, Esquerda, Centro, Direita e Baixo
+        BorderPane layoutPrincipal = new BorderPane();
 
-        // Aba 1: Cadastro
-        Tab tabCadastro = new Tab("Cadastrar Usuários");
-        UsuarioCadastroView cadastroView = new UsuarioCadastroView();
-        tabCadastro.setContent(cadastroView.getConteudo());
-        tabCadastro.setClosable(false); // Impede o utilizador de fechar a aba
+        // --- MENU LATERAL (Lado Esquerdo) ---
+        VBox menuLateral = new VBox(15); // Espaçamento de 15 entre os botões
+        menuLateral.setPadding(new Insets(20));
+        menuLateral.setStyle("-fx-background-color: #2b3e50;"); // Azul escuro
+        menuLateral.setPrefWidth(200);
 
-        // Aba 2: Busca
-        Tab tabBusca = new Tab("Pesquisar");
-        UsuarioBuscaView buscaView = new UsuarioBuscaView();
-        tabBusca.setContent(buscaView.getConteudo());
-        tabBusca.setClosable(false);
+        Label lblTitulo = new Label("MENU PRINCIPAL");
+        lblTitulo.setTextFill(javafx.scene.paint.Color.WHITE);
+        lblTitulo.setFont(Font.font("System", FontWeight.BOLD, 16));
 
-        // Aba 3: Atualizar
-        Tab tabAtualizar = new Tab("Atualizar");
-        UsuarioAtualizarView atualizarView = new UsuarioAtualizarView();
-        tabAtualizar.setContent(atualizarView.getConteudo());
-        tabAtualizar.setClosable(false);
+        // Estilo padrão para os botões do menu
+        String estiloBotao = "-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: center-left;";
 
-        // Aba 4: Remover
-        Tab tabRemover = new Tab("Remover");
-        UsuarioRemoverView removerView = new UsuarioRemoverView();
-        tabRemover.setContent(removerView.getConteudo());
-        tabRemover.setClosable(false);
+        Button btnUsuarios = new Button("👥 Gerenciar Usuários");
+        btnUsuarios.setMaxWidth(Double.MAX_VALUE);
+        btnUsuarios.setStyle(estiloBotao);
 
-        // Adiciona as abas ao painel principal
-        tabPane.getTabs().addAll(tabCadastro, tabBusca, tabAtualizar, tabRemover);  
+        Button btnAnimais = new Button("🐾 Gerenciar Animais");
+        btnAnimais.setMaxWidth(Double.MAX_VALUE);
+        btnAnimais.setStyle(estiloBotao);
 
-        Scene scene = new Scene(tabPane, 500, 500);
+        Button btnAbrigos = new Button("🏠 Gerenciar Abrigos");
+        btnAbrigos.setMaxWidth(Double.MAX_VALUE);
+        btnAbrigos.setStyle(estiloBotao);
+
+        Button btnCampanhas = new Button("📢 Gerenciar Campanhas");
+        btnCampanhas.setMaxWidth(Double.MAX_VALUE);
+        btnCampanhas.setStyle(estiloBotao);
+
+        Button btnAdocoes = new Button("♡ Registrar Adoções");
+        btnAdocoes.setMaxWidth(Double.MAX_VALUE);
+        btnAdocoes.setStyle(estiloBotao);
+
+        menuLateral.getChildren().addAll(lblTitulo, btnUsuarios, btnAnimais, btnAbrigos, btnCampanhas, btnAdocoes);
+        layoutPrincipal.setLeft(menuLateral);
+
+        // --- ÁREA CENTRAL (Começa com mensagem de boas-vindas) ---
+        VBox telaBemVindo = new VBox();
+        telaBemVindo.setAlignment(Pos.CENTER);
+        Label lblBemVindo = new Label("Selecione uma opção no menu lateral");
+        lblBemVindo.setFont(Font.font(20));
+        telaBemVindo.getChildren().add(lblBemVindo);
+
+        layoutPrincipal.setCenter(telaBemVindo);
+
+        // --- AÇÕES DOS BOTÕES ---
+        btnUsuarios.setOnAction(e -> {
+            // Puxa o "pacote" de abas que criamos no Passo 1 e joga no Centro
+            UsuarioGerenciamentoView viewUsuarios = new UsuarioGerenciamentoView();
+            layoutPrincipal.setCenter(viewUsuarios.getPainelAbas());
+        });
+
+        btnAnimais.setOnAction(e -> {
+            AnimalGerenciamentoView viewAnimais = new AnimalGerenciamentoView();
+            layoutPrincipal.setCenter(viewAnimais.getPainelAbas());
+        });
+
+        btnAbrigos.setOnAction(e -> {
+            AbrigoGerenciamentoView viewAbrigos = new AbrigoGerenciamentoView();
+            layoutPrincipal.setCenter(viewAbrigos.getPainelAbas());
+        });
+
+        btnCampanhas.setOnAction(e -> {
+            CampanhaGerenciamentoView viewCampanhas = new CampanhaGerenciamentoView();
+            layoutPrincipal.setCenter(viewCampanhas.getPainelAbas());
+        });
+
+        btnAdocoes.setOnAction(e -> {
+            AdocaoGerenciamentoView viewAdocoes = new AdocaoGerenciamentoView();
+            layoutPrincipal.setCenter(viewAdocoes.getPainelAbas());
+        });
+
+        Scene scene = new Scene(layoutPrincipal, 800, 600); // Tela maior para caber tudo
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -53,4 +107,5 @@ public class MainFX extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
 }

@@ -1,4 +1,4 @@
-package br.com.unipatas.view;
+package br.com.unipatas.view.usuario;
 
 import br.com.unipatas.controller.UsuarioController;
 import javafx.geometry.Insets;
