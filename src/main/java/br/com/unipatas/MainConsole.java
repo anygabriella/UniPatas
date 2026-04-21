@@ -47,9 +47,9 @@ public class MainConsole {
 
                         break;
                     case 2:
-                        System.out.print("ID do usuário: ");
-                        int usuarioID = sc.nextInt();
-                        Usuario busca = usuarioDAO.read(usuarioID);
+                        System.out.print("Nome do usuário: ");
+                        String nomeBusca = sc.nextLine();
+                        Usuario busca = usuarioDAO.read(nomeBusca);
                         if (busca != null) {
                             System.out.println("ID: " + busca.getId());
                             System.out.println("Nome: " + busca.getNome());
@@ -63,10 +63,10 @@ public class MainConsole {
                         }
                         break;
                     case 3:
-                        System.out.print("ID do usuário para alteração: ");
-                        int idUpdate = sc.nextInt();
-                        sc.nextLine();
-                        Usuario usuarioUpdate = usuarioDAO.read(idUpdate);
+                        System.out.print("Nome do usuário para alteração: ");
+                        String nomeUpdate = sc.nextLine();
+                        Usuario usuarioUpdate = usuarioDAO.read(nomeUpdate);
+
                         if (usuarioUpdate != null) {
                             System.out.println("---Novos dados---");
                             System.out.print("Nome: ");
@@ -83,9 +83,10 @@ public class MainConsole {
                             cidade = sc.nextLine();
                             System.out.print("Estado: ");
                             estado = sc.nextLine();
-                            Usuario usuarioAtualizado = new Usuario(idUpdate, nome, cpf, email, senha, telefone, cidade,
+                            Usuario usuarioAtualizado = new Usuario(usuarioUpdate.getId(), nome, cpf, email, senha, telefone, cidade,
                                     estado);
-                            boolean verificaUpdate = usuarioDAO.update(usuarioAtualizado);
+
+                            boolean verificaUpdate = usuarioDAO.update(usuarioAtualizado, usuarioUpdate.getNome());
                             if (verificaUpdate) {
                                 System.out.println("---Usuário atualizado com sucesso---");
                             } else {
@@ -96,15 +97,14 @@ public class MainConsole {
                         }
                         break;
                     case 4:
-                        System.out.print("ID do usuário para remoção: ");
-                        int idRemovido = sc.nextInt();
-                        sc.nextLine();
-                        Usuario usuarioDelete = usuarioDAO.read(idRemovido);
+                        System.out.print("Nome do usuário para remoção: ");
+                        String nomeRemovido = sc.nextLine();
+                        Usuario usuarioDelete = usuarioDAO.read(nomeRemovido);
                         if (usuarioDelete != null) {
                             System.out.println("Deseja realmente excluir " + usuarioDelete.getNome() + "? (S/N)");
                             char resp = sc.nextLine().toUpperCase().charAt(0);
                             if (resp == 'S') {
-                                usuarioDAO.delete(idRemovido);
+                                usuarioDAO.delete(nomeRemovido);
                                 System.out.println("---Usuário Removido---");
                             } else if (resp == 'N') {
                                 System.out.println("---Operação cancelada---");

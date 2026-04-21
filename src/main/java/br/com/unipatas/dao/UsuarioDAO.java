@@ -6,11 +6,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import br.com.unipatas.model.Usuario;
 
 public class UsuarioDAO {
     private RandomAccessFile arq;
+    private UsuarioIndiceDAO indiceDAO;
 
     public UsuarioDAO() throws Exception {
 
@@ -25,6 +27,9 @@ public class UsuarioDAO {
         if (arq.length() == 0) {
             arq.writeInt(0);
         }
+
+        indiceDAO = new UsuarioIndiceDAO();
+
     }
 
     // CREATE
@@ -41,82 +46,75 @@ public class UsuarioDAO {
 
         byte[] ba = i.toBytes(); // transforma os dados em bytes
 
-        arq.writeByte(0); // lapide 0 == ativa
-        arq.writeShort(ba.length); // escreve o tamanho do registro
+        long pos = arq.getFilePointer(); // posição da lápide (INÍCIO do registro)
+
+        arq.writeByte(0);
+        arq.writeShort(ba.length);
         arq.write(ba);
+
+        indiceDAO.create(i.getNome(), pos);
 
         return ultimoId;
     }
 
     // READ
-    public Usuario read(int id) throws Exception {
-        arq.seek(4); // pula cabeçalho
+    public Usuario read(String nome) throws Exception {
+        long pos = indiceDAO.read(nome);
 
-        while (arq.getFilePointer() < arq.length()) {
-
-            byte lapide = arq.readByte();
-            Short tam = arq.readShort(); // tamanho dos dados
-
-            if (lapide == 0) {
-                int idLido = arq.readInt(); // le o id do registro
-
-                if (idLido == id) { // se for o id procurado
-                    arq.seek(arq.getFilePointer() - 4); // volta para o começo do registro
-                    byte[] by = new byte[tam]; // cria um array de bytes daquele tamanho
-                    arq.readFully(by); // preenche o array até o final ou lança erro
-
-                    Usuario u = new Usuario();
-                    u.fromBytes(by); // tranforma para obj
-
-                    return u;
-
-                } else
-                    arq.skipBytes(tam - 4); // se não for o id, pula o resto do registro (já leu 4 bytes do id)
-            } else
-                arq.skipBytes(tam); // se lapide for 1, pula
+        if(pos == -1) {
+            return null;
         }
 
-        return null;
+        arq.seek(pos);
+
+        byte lapide = arq.readByte();
+        short tam = arq.readShort();
+
+        if (lapide == 1) return null;
+
+        byte[] by = new byte[tam];
+        arq.readFully(by);
+
+        Usuario u = new Usuario();
+        u.fromBytes(by);
+
+        return u;
+        
     }
 
     // UPDATE
-    public boolean update(Usuario i) throws Exception {
-        arq.seek(4);
+    public boolean update(Usuario novo, String nomeAntigo) throws Exception {
+        long pos = indiceDAO.read(nomeAntigo);
+        if (pos == -1) return false;
 
-        while (arq.getFilePointer() < arq.length()) {
-            long pos = arq.getFilePointer();
+        arq.seek(pos);
+        byte lapide = arq.readByte();
+        short tam = arq.readShort();
 
-            byte lapide = arq.readByte();
-            Short tam = arq.readShort();
+        if (lapide == 1) return false;
 
-            if (lapide == 0) {
-                byte[] by = new byte[tam];
-                arq.readFully(by);
+        // marca antigo como removido
+        arq.seek(pos);
+        arq.writeByte(1);
 
-                Usuario u = new Usuario();
-                u.fromBytes(by);
+        // escreve novo no final
+        arq.seek(arq.length());
+        byte[] novoBa = novo.toBytes();
 
-                if (u.getId() == i.getId()) {
-                    arq.seek(pos);
-                    arq.writeByte(1);
+        long novaPos = arq.getFilePointer();
+        arq.writeByte(0);
+        arq.writeShort(novoBa.length);
+        arq.write(novoBa);
 
-                    arq.seek(arq.length());
-                    byte[] novo = i.toBytes();
-                    arq.writeByte(0);
-                    arq.writeShort(novo.length);
-                    arq.write(novo);
+        // atualiza índice
+        indiceDAO.delete(nomeAntigo);
+        indiceDAO.create(novo.getNome(), novaPos);
 
-                    return true;
-                }
-            } else
-                arq.skipBytes(tam);
-        }
-
-        return false;
+        return true;
     }
 
     // DELETE
-    public boolean delete(int id) throws Exception {
+    public boolean delete(String nome) throws Exception {
         arq.seek(4); // Pula o cabeçalho
 
         while (arq.getFilePointer() < arq.length()) {
@@ -126,16 +124,18 @@ public class UsuarioDAO {
             short tam = arq.readShort();
 
             if (lapide == 0) {
-                int idLido = arq.readInt(); // Lê apenas o ID (4 bytes)
+                byte[] by = new byte[tam]; 
+                arq.readFully(by);
 
-                if (idLido == id) {
+                Usuario u = new Usuario();
+                u.fromBytes(by); 
+
+                if (u.getNome().equals(nome)) {
                     arq.seek(pos); // Volta para o início deste registro
                     arq.writeByte(1); // Marca a lápide como excluída
+                    indiceDAO.delete(nome);
                     return true;
-                } else {
-                    // Se não for o ID, pula o resto (tamanho total menos os 4 bytes do ID já lidos)
-                    arq.skipBytes(tam - 4);
-                }
+                } 
             } else {
                 // Se o registro já estiver excluído (lápide 1), pula o tamanho total dele
                 arq.skipBytes(tam);
@@ -216,7 +216,7 @@ public class UsuarioDAO {
 
         // 3. RESULTADO FINAL
         Path resultadoFinal = nosAuxiliares ? caminhos[0] : caminhos[2];
-        copiarParaArquivoFinal(resultadoFinal, ultimoId);
+        copiarParaArquivoOrdenado(resultadoFinal, ultimoId);
     }
 
     public void mesclarArquivos(Path arqA, Path arqB, Path arqC, Path arqD, int tamBloco) throws Exception {
@@ -307,18 +307,27 @@ public class UsuarioDAO {
         arq.write(by);
     }
 
-    public void copiarParaArquivoFinal(Path origem, int ultimoId) throws Exception {
-        try (RandomAccessFile in = new RandomAccessFile(origem.toFile(), "r")) {
+    public void copiarParaArquivoOrdenado(Path origem, int ultimoId) throws Exception {
 
-            arq.setLength(0);
-            arq.seek(0);
+        Path destino = Paths.get("UsuarioOrdenado.db");
 
-            arq.writeInt(ultimoId); // cabeçalho
+        // se já existir, apaga
+        if (Files.exists(destino)) {
+            Files.delete(destino);
+        }
+
+        try (RandomAccessFile in = new RandomAccessFile(origem.toFile(), "r");
+            RandomAccessFile out = new RandomAccessFile(destino.toFile(), "rw")) {
+
+            out.setLength(0);
+            out.seek(0);
+
+            out.writeInt(ultimoId);
 
             while (in.getFilePointer() < in.length()) {
                 Usuario u = lerUsuario(in);
                 if (u != null) {
-                    escreverUsuario(arq, u);
+                    escreverUsuario(out, u);
                 }
             }
         }
