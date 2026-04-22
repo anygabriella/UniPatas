@@ -10,7 +10,8 @@ import br.com.unipatas.model.Usuario;
 
 public class UsuarioDAO {
   private RandomAccessFile arq;
-  private UsuarioIndiceDAO indiceDAO;
+  private UsuarioIndiceNomeDAO indiceNomeDAO;
+  private UsuarioIndicePKDAO indicePKDAO;
 
   public UsuarioDAO() throws Exception {
 
@@ -25,7 +26,8 @@ public class UsuarioDAO {
       arq.writeInt(0);
     }
 
-    indiceDAO = new UsuarioIndiceDAO();
+    indiceNomeDAO = new UsuarioIndiceNomeDAO();
+    indicePKDAO = new UsuarioIndicePKDAO();
   }
 
   // CREATE
@@ -48,14 +50,15 @@ public class UsuarioDAO {
     arq.writeShort(ba.length);
     arq.write(ba);
 
-    indiceDAO.create(i.getNome(), pos);
+    indiceNomeDAO.create(i.getNome(), pos);
+    indicePKDAO.create(i.getId(), pos);
 
     return ultimoId;
   }
 
-  // READ por nome (original)
+  // READ por nome
   public Usuario read(String nome) throws Exception {
-    long pos = indiceDAO.read(nome);
+    long pos = indiceNomeDAO.read(nome);
 
     if (pos == -1)
       return null;
@@ -77,34 +80,73 @@ public class UsuarioDAO {
     return u;
   }
 
-  // READ por ID — varre o arquivo procurando o ID
+  // READ por ID - PK
   public Usuario readById(int id) throws Exception {
-    arq.seek(4); // pula cabeçalho
+    long pos = indicePKDAO.read(id);
 
-    while (arq.getFilePointer() < arq.length()) {
-      byte lapide = arq.readByte();
-      short tam = arq.readShort();
+    if (pos == -1)
+      return null;
 
-      if (lapide == 0) {
-        byte[] by = new byte[tam];
-        arq.readFully(by);
+    arq.seek(pos);
 
-        Usuario u = new Usuario();
-        u.fromBytes(by);
+    byte lapide = arq.readByte();
+    short tam = arq.readShort();
 
-        if (u.getId() == id)
-          return u;
-      } else {
-        arq.skipBytes(tam);
-      }
-    }
+    if (lapide == 1)
+      return null;
 
-    return null;
+    byte[] by = new byte[tam];
+    arq.readFully(by);
+
+    Usuario u = new Usuario();
+    u.fromBytes(by);
+
+    return u;
   }
 
-  // UPDATE por nome (original)
+  // UPDATE por nome 
   public boolean update(Usuario novo, String nomeAntigo) throws Exception {
-    long pos = indiceDAO.read(nomeAntigo);
+
+    Usuario antigo = read(nomeAntigo);
+    if (antigo == null) return false;
+
+    long pos = indiceNomeDAO.read(nomeAntigo);
+    if (pos == -1) return false;
+
+    arq.seek(pos);
+    byte lapide = arq.readByte();
+    if (lapide == 1) return false;
+
+    // garante que o ID não muda
+    novo.setId(antigo.getId());
+
+    arq.seek(pos);
+    arq.writeByte(1);
+
+    arq.seek(arq.length());
+    byte[] novoBa = novo.toBytes();
+
+    long novaPos = arq.getFilePointer();
+    arq.writeByte(0);
+    arq.writeShort(novoBa.length);
+    arq.write(novoBa);
+
+    indicePKDAO.delete(antigo.getId());
+    indicePKDAO.create(novo.getId(), novaPos);
+
+    indiceNomeDAO.delete(nomeAntigo);
+    indiceNomeDAO.create(novo.getNome(), novaPos);
+
+    return true;
+  }
+
+  // UPDATE por ID - PK
+  public boolean updateById(Usuario novo) throws Exception {
+    Usuario antigo = readById(novo.getId());
+    if (antigo == null) return false;
+
+    long pos = indicePKDAO.read(novo.getId());
+
     if (pos == -1)
       return false;
 
@@ -125,116 +167,58 @@ public class UsuarioDAO {
     arq.writeShort(novoBa.length);
     arq.write(novoBa);
 
-    indiceDAO.delete(nomeAntigo);
-    indiceDAO.create(novo.getNome(), novaPos);
+
+    indicePKDAO.delete(novo.getId());
+    indicePKDAO.create(novo.getId(), novaPos);
+    indiceNomeDAO.delete(antigo.getNome());
+    indiceNomeDAO.create(novo.getNome(), novaPos);
 
     return true;
   }
 
-  // UPDATE por ID — localiza pelo ID e reescreve no final
-  public boolean updateById(Usuario novo) throws Exception {
-    arq.seek(4);
-
-    while (arq.getFilePointer() < arq.length()) {
-      long pos = arq.getFilePointer();
-      byte lapide = arq.readByte();
-      short tam = arq.readShort();
-
-      if (lapide == 0) {
-        byte[] by = new byte[tam];
-        arq.readFully(by);
-
-        Usuario u = new Usuario();
-        u.fromBytes(by);
-
-        if (u.getId() == novo.getId()) {
-          // marca registro antigo como removido
-          arq.seek(pos);
-          arq.writeByte(1);
-
-          // remove do índice pelo nome antigo
-          indiceDAO.delete(u.getNome());
-
-          // escreve o novo registro no final
-          arq.seek(arq.length());
-          byte[] novoBa = novo.toBytes();
-          long novaPos = arq.getFilePointer();
-          arq.writeByte(0);
-          arq.writeShort(novoBa.length);
-          arq.write(novoBa);
-
-          // adiciona novo nome no índice
-          indiceDAO.create(novo.getNome(), novaPos);
-
-          return true;
-        }
-      } else {
-        arq.skipBytes(tam);
-      }
-    }
-
-    return false;
-  }
-
-  // DELETE por nome (original)
+  // DELETE por nome 
   public boolean delete(String nome) throws Exception {
-    arq.seek(4);
+    Usuario u = read(nome);
+    if (u == null) return false;
 
-    while (arq.getFilePointer() < arq.length()) {
-      long pos = arq.getFilePointer();
+    long pos = indiceNomeDAO.read(nome);
 
-      byte lapide = arq.readByte();
-      short tam = arq.readShort();
+    if (pos == -1) return false;
 
-      if (lapide == 0) {
-        byte[] by = new byte[tam];
-        arq.readFully(by);
+    arq.seek(pos);
+    byte lapide = arq.readByte();
+    if (lapide == 1) return false;
 
-        Usuario u = new Usuario();
-        u.fromBytes(by);
+    arq.seek(pos);
+    arq.writeByte(1);
 
-        if (u.getNome().equals(nome)) {
-          arq.seek(pos);
-          arq.writeByte(1);
-          indiceDAO.delete(nome);
-          return true;
-        }
-      } else {
-        arq.skipBytes(tam);
-      }
-    }
-    return false;
+    indiceNomeDAO.delete(nome);
+    indicePKDAO.delete(u.getId());
+
+    return true;
   }
 
-  // DELETE por ID — localiza pelo ID e marca lápide
+  // DELETE por ID — PK
   public boolean deleteById(int id) throws Exception {
-    arq.seek(4);
+    Usuario u = readById(id);
+    if (u == null) return false;
 
-    while (arq.getFilePointer() < arq.length()) {
-      long pos = arq.getFilePointer();
-      byte lapide = arq.readByte();
-      short tam = arq.readShort();
+    long pos = indicePKDAO.read(id);
 
-      if (lapide == 0) {
-        byte[] by = new byte[tam];
-        arq.readFully(by);
+    arq.seek(pos);
+    byte lapide = arq.readByte();
+    if (lapide == 1) return false;
 
-        Usuario u = new Usuario();
-        u.fromBytes(by);
+    arq.seek(pos);
+    arq.writeByte(1);
 
-        if (u.getId() == id) {
-          arq.seek(pos);
-          arq.writeByte(1);
-          indiceDAO.delete(u.getNome());
-          return true;
-        }
-      } else {
-        arq.skipBytes(tam);
-      }
-    }
+    indicePKDAO.delete(id);
+    indiceNomeDAO.delete(u.getNome());
 
-    return false;
+    return true;
+
   }
+
 
   // ── ORDENAÇÃO ─────────────────────────────────────
 

@@ -1,28 +1,28 @@
 package br.com.unipatas.dao;
 
 import java.io.*;
-import br.com.unipatas.model.UsuarioIndice;
+import br.com.unipatas.model.UsuarioIndicePK;
 
-public class UsuarioIndiceDAO {
+public class UsuarioIndicePKDAO {
 
     private RandomAccessFile arq;
 
-    public UsuarioIndiceDAO() throws Exception {
+    public UsuarioIndicePKDAO() throws Exception {
 
         File pasta = new File("data");
         if (!pasta.exists()) {
             pasta.mkdir();
         }
 
-        arq = new RandomAccessFile("data/Usuario.idx", "rw");
+        arq = new RandomAccessFile("data/UsuarioPK.idx", "rw");
     }
 
     // CREATE
-    public void create(String nome, long posicao) throws Exception {
+    public void create(int id, long posicao) throws Exception {
 
         arq.seek(arq.length());
 
-        UsuarioIndice idx = new UsuarioIndice(nome, posicao);
+        UsuarioIndicePK idx = new UsuarioIndicePK(id, posicao);
         byte[] ba = idx.toBytes();
 
         arq.writeByte(0); // lápide válida
@@ -31,7 +31,7 @@ public class UsuarioIndiceDAO {
     }
 
     // READ (busca sequencial)
-    public long read(String nome) throws Exception {
+    public long read(int id) throws Exception {
 
         arq.seek(0);
 
@@ -45,10 +45,10 @@ public class UsuarioIndiceDAO {
                 byte[] ba = new byte[tam];
                 arq.readFully(ba);
 
-                UsuarioIndice idx = new UsuarioIndice();
+                UsuarioIndicePK idx = new UsuarioIndicePK();
                 idx.fromBytes(ba);
 
-                if (idx.getNome().equals(nome)) {
+                if (idx.getId() == id) {
                     return idx.getPosicao();
                 }
 
@@ -61,7 +61,7 @@ public class UsuarioIndiceDAO {
     }
 
     // DELETE (marca lápide)
-    public boolean delete(String nome) throws Exception {
+    public boolean delete(int id) throws Exception {
 
         arq.seek(0);
 
@@ -77,10 +77,10 @@ public class UsuarioIndiceDAO {
                 byte[] ba = new byte[tam];
                 arq.readFully(ba);
 
-                UsuarioIndice idx = new UsuarioIndice();
+                UsuarioIndicePK idx = new UsuarioIndicePK();
                 idx.fromBytes(ba);
 
-                if (idx.getNome().equals(nome)) {
+                if (idx.getId() == id) {
 
                     arq.seek(pos);
                     arq.writeByte(1); // marca como removido

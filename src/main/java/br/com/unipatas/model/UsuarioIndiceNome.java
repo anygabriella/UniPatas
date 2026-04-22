@@ -2,14 +2,14 @@ package br.com.unipatas.model;
 
 import java.io.*;
 
-public class UsuarioIndice {
+public class UsuarioIndiceNome {
 
     private String nome;
     private long posicao;
 
-    public UsuarioIndice() {}
+    public UsuarioIndiceNome() {}
 
-    public UsuarioIndice(String nome, long posicao) {
+    public UsuarioIndiceNome(String nome, long posicao) {
         this.nome = nome;
         this.posicao = posicao;
     }
