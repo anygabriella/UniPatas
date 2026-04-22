@@ -1,5 +1,6 @@
 package br.com.unipatas.view.animal;
 
+import br.com.unipatas.controller.AnimalController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -8,52 +9,96 @@ import javafx.scene.layout.HBox;
 
 public class AnimalCadastroView {
 
+  private AnimalController controller;
+
+  public AnimalCadastroView() {
+    try {
+      this.controller = new AnimalController();
+    } catch (Exception e) {
+      mostrarAlerta(Alert.AlertType.ERROR, "Erro Crítico", "Não foi possível conectar ao banco.");
+    }
+  }
+
   public GridPane getConteudo() {
+
     GridPane grid = new GridPane();
     grid.setAlignment(Pos.CENTER);
     grid.setHgap(10);
     grid.setVgap(10);
     grid.setPadding(new Insets(25));
-    grid.getStyleClass().add("form-grid"); // CSS aplicado
+    grid.getStyleClass().add("form-grid");
 
     TextField txtNome = new TextField();
+    TextField txtIdade = new TextField();
+    TextField txtEspecie = new TextField();
     TextField txtRaca = new TextField();
-    TextField txtPeso = new TextField();
-    txtPeso.setPromptText("Ex: 12.5");
-
-    DatePicker dpNascimento = new DatePicker();
-    DatePicker dpAdocao = new DatePicker();
-
-    ComboBox<String> cbPorte = new ComboBox<>();
-    cbPorte.getItems().addAll("Pequeno", "Médio", "Grande");
-    cbPorte.setPromptText("Selecione o porte");
+    TextField txtIdAbrigo = new TextField();
 
     grid.add(new Label("Nome:"), 0, 0);
     grid.add(txtNome, 1, 0);
-    grid.add(new Label("Raça:"), 0, 1);
-    grid.add(txtRaca, 1, 1);
-    grid.add(new Label("Peso (kg):"), 0, 2);
-    grid.add(txtPeso, 1, 2);
-    grid.add(new Label("Porte:"), 0, 3);
-    grid.add(cbPorte, 1, 3);
-    grid.add(new Label("Data Nascimento:"), 0, 4);
-    grid.add(dpNascimento, 1, 4);
-    grid.add(new Label("Data Adoção:"), 0, 5);
-    grid.add(dpAdocao, 1, 5);
+
+    grid.add(new Label("Idade:"), 0, 1);
+    grid.add(txtIdade, 1, 1);
+
+    grid.add(new Label("Espécie:"), 0, 2);
+    grid.add(txtEspecie, 1, 2);
+
+    grid.add(new Label("Raça:"), 0, 3);
+    grid.add(txtRaca, 1, 3);
+
+    grid.add(new Label("ID Abrigo:"), 0, 4);
+    grid.add(txtIdAbrigo, 1, 4);
 
     Button btnSalvar = new Button("Salvar Animal");
-    btnSalvar.getStyleClass().add("botao-principal"); // CSS
+    btnSalvar.getStyleClass().add("botao-principal");
 
     HBox hbBtn = new HBox(10);
     hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
     hbBtn.getChildren().add(btnSalvar);
-    grid.add(hbBtn, 1, 6);
+    grid.add(hbBtn, 1, 5);
 
+    // 🚨 AQUI ESTAVA O MOCK — AGORA É REAL
     btnSalvar.setOnAction(e -> {
-      Alert alerta = new Alert(Alert.AlertType.INFORMATION, "Animal salvo (mock)");
-      alerta.showAndWait();
+      try {
+
+        int idade = Integer.parseInt(txtIdade.getText());
+        int idAbrigo = Integer.parseInt(txtIdAbrigo.getText());
+
+        int idGerado = controller.salvarAnimal(
+            txtNome.getText(),
+            idade,
+            txtEspecie.getText(),
+            txtRaca.getText(),
+            idAbrigo
+        );
+
+        mostrarAlerta(Alert.AlertType.INFORMATION,
+            "Sucesso",
+            "Animal salvo com ID: " + idGerado);
+
+        // limpar campos
+        txtNome.clear();
+        txtIdade.clear();
+        txtEspecie.clear();
+        txtRaca.clear();
+        txtIdAbrigo.clear();
+
+      } catch (NumberFormatException ex) {
+        mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Idade e ID do abrigo devem ser números.");
+      } catch (Exception ex) {
+        ex.printStackTrace(); // 🔥 ESSENCIAL
+        mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Falha ao salvar: " + ex.getMessage());
+      }
     });
 
     return grid;
+  }
+
+  private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensagem) {
+    Alert alerta = new Alert(tipo);
+    alerta.setTitle(titulo);
+    alerta.setHeaderText(null);
+    alerta.setContentText(mensagem);
+    alerta.showAndWait();
   }
 }

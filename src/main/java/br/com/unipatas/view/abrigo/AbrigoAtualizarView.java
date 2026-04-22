@@ -1,57 +1,131 @@
 package br.com.unipatas.view.abrigo;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import br.com.unipatas.controller.AbrigoController;
+import br.com.unipatas.model.Abrigo;
+import javafx.geometry.*;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 public class AbrigoAtualizarView {
 
+  private AbrigoController controller;
+  private int idAtual = -1;
+
+  public AbrigoAtualizarView() {
+    try {
+      controller = new AbrigoController();
+    } catch (Exception e) {
+      mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao conectar.");
+    }
+  }
+
   public VBox getConteudo() {
-    VBox layoutPrincipal = new VBox(20);
-    layoutPrincipal.setAlignment(Pos.CENTER);
-    layoutPrincipal.setPadding(new Insets(25));
 
-    HBox hbBusca = new HBox(10);
-    hbBusca.setAlignment(Pos.CENTER);
+    VBox layout = new VBox(20);
+    layout.setAlignment(Pos.CENTER);
+    layout.setPadding(new Insets(25));
 
-    TextField txtIdBusca = new TextField();
-    txtIdBusca.setPromptText("ID para alterar");
+    // 🔍 BUSCA
+    HBox hb = new HBox(10);
+    hb.setAlignment(Pos.CENTER);
+
+    TextField txtId = new TextField();
+    txtId.setPromptText("ID do abrigo");
+    txtId.setPrefWidth(120);
 
     Button btnBuscar = new Button("Buscar");
-    btnBuscar.getStyleClass().add("botao-principal");
+    btnBuscar.getStyleClass().add("botao-secundario");
 
-    hbBusca.getChildren().addAll(new Label("ID:"), txtIdBusca, btnBuscar);
+    hb.getChildren().addAll(new Label("ID:"), txtId, btnBuscar);
 
-    GridPane gridForm = new GridPane();
-    gridForm.setAlignment(Pos.CENTER);
-    gridForm.setHgap(10);
-    gridForm.setVgap(10);
-    gridForm.getStyleClass().add("form-grid");
+    // 📝 FORMULÁRIO
+    GridPane grid = new GridPane();
+    grid.setAlignment(Pos.CENTER);
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.getStyleClass().add("form-grid");
 
     TextField txtNome = new TextField();
-    TextField txtEndereco = new TextField();
+    TextField txtCidade = new TextField();
     TextField txtTelefone = new TextField();
-    TextField txtCusto = new TextField();
 
-    gridForm.add(new Label("Nome:"), 0, 0);
-    gridForm.add(txtNome, 1, 0);
-    gridForm.add(new Label("Endereço:"), 0, 1);
-    gridForm.add(txtEndereco, 1, 1);
-    gridForm.add(new Label("Telefone:"), 0, 2);
-    gridForm.add(txtTelefone, 1, 2);
-    gridForm.add(new Label("Custo Mensal:"), 0, 3);
-    gridForm.add(txtCusto, 1, 3);
+    grid.add(new Label("Nome:"), 0, 0);
+    grid.add(txtNome, 1, 0);
+    grid.add(new Label("Cidade:"), 0, 1);
+    grid.add(txtCidade, 1, 1);
+    grid.add(new Label("Telefone:"), 0, 2);
+    grid.add(txtTelefone, 1, 2);
 
-    gridForm.setDisable(true);
+    grid.setDisable(true);
 
+    // 💾 BOTÃO SALVAR
     Button btnSalvar = new Button("Salvar Alterações");
     btnSalvar.getStyleClass().add("botao-principal");
     btnSalvar.setDisable(true);
 
-    layoutPrincipal.getChildren().addAll(hbBusca, gridForm, btnSalvar);
-    return layoutPrincipal;
+    // 🔎 AÇÃO BUSCAR
+    btnBuscar.setOnAction(e -> {
+      try {
+        int id = Integer.parseInt(txtId.getText().trim());
+        Abrigo a = controller.buscar(id);
+
+        if (a != null) {
+          idAtual = a.getId();
+          txtNome.setText(a.getNome());
+          txtCidade.setText(a.getCidade());
+          txtTelefone.setText(a.getTelefone());
+
+          grid.setDisable(false);
+          btnSalvar.setDisable(false);
+        } else {
+          mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Abrigo não encontrado!");
+          grid.setDisable(true);
+          btnSalvar.setDisable(true);
+        }
+
+      } catch (NumberFormatException ex) {
+        mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Digite um ID válido.");
+      } catch (Exception ex) {
+        mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao buscar: " + ex.getMessage());
+      }
+    });
+
+    // 💾 AÇÃO SALVAR
+    btnSalvar.setOnAction(e -> {
+      try {
+        boolean sucesso = controller.atualizar(
+            idAtual,
+            txtNome.getText(),
+            txtCidade.getText(),
+            txtTelefone.getText()
+        );
+
+        if (sucesso) {
+          mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Abrigo atualizado!");
+
+          grid.setDisable(true);
+          btnSalvar.setDisable(true);
+          txtId.clear();
+          idAtual = -1;
+
+        } else {
+          mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Não foi possível atualizar.");
+        }
+
+      } catch (Exception ex) {
+        mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Falha ao salvar: " + ex.getMessage());
+      }
+    });
+
+    layout.getChildren().addAll(hb, grid, btnSalvar);
+    return layout;
+  }
+
+  private void mostrarAlerta(Alert.AlertType tipo, String titulo, String msg) {
+    Alert a = new Alert(tipo);
+    a.setTitle(titulo);
+    a.setHeaderText(null);
+    a.setContentText(msg);
+    a.showAndWait();
   }
 }

@@ -1,51 +1,90 @@
 package br.com.unipatas.view.campanha;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import br.com.unipatas.controller.CampanhaController;
+import br.com.unipatas.model.Campanha;
+import javafx.geometry.*;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 public class CampanhaBuscaView {
 
+  private CampanhaController controller;
+
+  // ✅ SEM throws
+  public CampanhaBuscaView() {
+    try {
+      controller = new CampanhaController();
+    } catch (Exception e) {
+      mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao conectar ao banco.");
+    }
+  }
+
   public VBox getConteudo() {
-    VBox layoutPrincipal = new VBox(20);
-    layoutPrincipal.setAlignment(Pos.CENTER);
-    layoutPrincipal.setPadding(new Insets(25));
+
+    VBox layout = new VBox(20);
+    layout.setAlignment(Pos.CENTER);
+    layout.setPadding(new Insets(25));
 
     HBox hbBusca = new HBox(10);
     hbBusca.setAlignment(Pos.CENTER);
 
-    TextField txtIdBusca = new TextField();
-    txtIdBusca.setPromptText("Digite o ID da Campanha");
+    TextField txtId = new TextField();
+    txtId.setPromptText("ID da Campanha");
+    txtId.setPrefWidth(120);
 
-    Button btnBuscar = new Button("Buscar");
-    btnBuscar.getStyleClass().add("botao-principal");
+    Button btn = new Button("Buscar");
+    btn.getStyleClass().add("botao-principal");
 
-    hbBusca.getChildren().addAll(new Label("ID:"), txtIdBusca, btnBuscar);
+    hbBusca.getChildren().addAll(new Label("ID:"), txtId, btn);
 
-    GridPane gridResultados = new GridPane();
-    gridResultados.setAlignment(Pos.CENTER);
-    gridResultados.setHgap(10);
-    gridResultados.setVgap(10);
-    gridResultados.getStyleClass().add("form-grid"); // padrão
+    GridPane grid = new GridPane();
+    grid.setAlignment(Pos.CENTER);
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.getStyleClass().add("form-grid");
 
+    Label lblId = new Label("-");
     Label lblNome = new Label("-");
-    Label lblLocal = new Label("-");
-    Label lblData = new Label("-");
-    Label lblCusto = new Label("-");
+    Label lblDesc = new Label("-");
 
-    gridResultados.add(new Label("Nome:"), 0, 0);
-    gridResultados.add(lblNome, 1, 0);
-    gridResultados.add(new Label("Local:"), 0, 1);
-    gridResultados.add(lblLocal, 1, 1);
-    gridResultados.add(new Label("Data:"), 0, 2);
-    gridResultados.add(lblData, 1, 2);
-    gridResultados.add(new Label("Custo:"), 0, 3);
-    gridResultados.add(lblCusto, 1, 3);
+    grid.add(new Label("ID:"), 0, 0);
+    grid.add(lblId, 1, 0);
+    grid.add(new Label("Nome:"), 0, 1);
+    grid.add(lblNome, 1, 1);
+    grid.add(new Label("Descrição:"), 0, 2);
+    grid.add(lblDesc, 1, 2);
 
-    layoutPrincipal.getChildren().addAll(hbBusca, gridResultados);
-    return layoutPrincipal;
+    btn.setOnAction(e -> {
+      try {
+        int id = Integer.parseInt(txtId.getText().trim());
+
+        // ✅ método correto
+        Campanha c = controller.buscar(id);
+
+        if (c != null) {
+          lblId.setText(String.valueOf(c.getId()));
+          lblNome.setText(c.getNome());
+          lblDesc.setText(c.getDescricao());
+        } else {
+          mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Campanha não encontrada!");
+        }
+
+      } catch (NumberFormatException ex) {
+        mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Digite um ID válido.");
+      } catch (Exception ex) {
+        mostrarAlerta(Alert.AlertType.ERROR, "Erro", ex.getMessage());
+      }
+    });
+
+    layout.getChildren().addAll(hbBusca, grid);
+    return layout;
+  }
+
+  private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensagem) {
+    Alert alerta = new Alert(tipo);
+    alerta.setTitle(titulo);
+    alerta.setHeaderText(null);
+    alerta.setContentText(mensagem);
+    alerta.showAndWait();
   }
 }

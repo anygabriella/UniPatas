@@ -1,51 +1,85 @@
 package br.com.unipatas.view.abrigo;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import br.com.unipatas.controller.AbrigoController;
+import br.com.unipatas.model.Abrigo;
+import javafx.geometry.*;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 public class AbrigoBuscaView {
 
+  private AbrigoController controller;
+
+  public AbrigoBuscaView() {
+    try {
+      controller = new AbrigoController();
+    } catch (Exception e) {
+      mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao conectar.");
+    }
+  }
+
   public VBox getConteudo() {
-    VBox layoutPrincipal = new VBox(20);
-    layoutPrincipal.setAlignment(Pos.CENTER);
-    layoutPrincipal.setPadding(new Insets(25));
 
-    HBox hbBusca = new HBox(10);
-    hbBusca.setAlignment(Pos.CENTER);
+    VBox layout = new VBox(20);
+    layout.setAlignment(Pos.CENTER);
+    layout.setPadding(new Insets(25));
 
-    TextField txtIdBusca = new TextField();
-    txtIdBusca.setPromptText("Digite o ID do Abrigo");
+    HBox hb = new HBox(10);
+    hb.setAlignment(Pos.CENTER);
 
-    Button btnBuscar = new Button("Buscar");
-    btnBuscar.getStyleClass().add("botao-principal");
+    TextField txtId = new TextField();
+    txtId.setPromptText("ID do abrigo");
 
-    hbBusca.getChildren().addAll(new Label("ID do Abrigo:"), txtIdBusca, btnBuscar);
+    Button btn = new Button("Buscar");
+    btn.getStyleClass().add("botao-principal");
 
-    GridPane gridResultados = new GridPane();
-    gridResultados.setAlignment(Pos.CENTER);
-    gridResultados.setHgap(10);
-    gridResultados.setVgap(10);
-    gridResultados.getStyleClass().add("form-grid");
+    hb.getChildren().addAll(new Label("ID:"), txtId, btn);
+
+    GridPane grid = new GridPane();
+    grid.setAlignment(Pos.CENTER);
+    grid.setHgap(10);
+    grid.setVgap(10);
 
     Label lblNome = new Label("-");
-    Label lblEndereco = new Label("-");
+    Label lblCidade = new Label("-");
     Label lblTelefone = new Label("-");
-    Label lblCusto = new Label("-");
 
-    gridResultados.add(new Label("Nome:"), 0, 0);
-    gridResultados.add(lblNome, 1, 0);
-    gridResultados.add(new Label("Endereço:"), 0, 1);
-    gridResultados.add(lblEndereco, 1, 1);
-    gridResultados.add(new Label("Telefone:"), 0, 2);
-    gridResultados.add(lblTelefone, 1, 2);
-    gridResultados.add(new Label("Custo Mensal:"), 0, 3);
-    gridResultados.add(lblCusto, 1, 3);
+    grid.add(new Label("Nome:"), 0, 0);
+    grid.add(lblNome, 1, 0);
 
-    layoutPrincipal.getChildren().addAll(hbBusca, gridResultados);
-    return layoutPrincipal;
+    grid.add(new Label("Cidade:"), 0, 1);
+    grid.add(lblCidade, 1, 1);
+
+    grid.add(new Label("Telefone:"), 0, 2);
+    grid.add(lblTelefone, 1, 2);
+
+    btn.setOnAction(e -> {
+      try {
+        int id = Integer.parseInt(txtId.getText().trim());
+        Abrigo a = controller.buscar(id);
+
+        if (a != null) {
+          lblNome.setText(a.getNome());
+          lblCidade.setText(a.getCidade());
+          lblTelefone.setText(a.getTelefone());
+        } else {
+          mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Abrigo não encontrado!");
+        }
+
+      } catch (Exception ex) {
+        mostrarAlerta(Alert.AlertType.ERROR, "Erro", ex.getMessage());
+      }
+    });
+
+    layout.getChildren().addAll(hb, grid);
+    return layout;
+  }
+
+  private void mostrarAlerta(Alert.AlertType tipo, String titulo, String msg) {
+    Alert a = new Alert(tipo);
+    a.setTitle(titulo);
+    a.setHeaderText(null);
+    a.setContentText(msg);
+    a.showAndWait();
   }
 }

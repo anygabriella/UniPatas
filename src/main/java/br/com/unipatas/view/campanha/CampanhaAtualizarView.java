@@ -1,57 +1,133 @@
 package br.com.unipatas.view.campanha;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import br.com.unipatas.controller.CampanhaController;
+import br.com.unipatas.model.Campanha;
+import javafx.geometry.*;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 public class CampanhaAtualizarView {
 
-  public VBox getConteudo() {
-    VBox layoutPrincipal = new VBox(20);
-    layoutPrincipal.setAlignment(Pos.CENTER);
-    layoutPrincipal.setPadding(new Insets(25));
+  private CampanhaController controller;
+  private int idAtual = -1;
 
+  public CampanhaAtualizarView() {
+    try {
+      controller = new CampanhaController();
+    } catch (Exception e) {
+      mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao conectar ao banco.");
+    }
+  }
+
+  public VBox getConteudo() {
+
+    VBox layout = new VBox(20);
+    layout.setAlignment(Pos.CENTER);
+    layout.setPadding(new Insets(25));
+
+    // 🔍 BUSCA
     HBox hbBusca = new HBox(10);
     hbBusca.setAlignment(Pos.CENTER);
 
-    TextField txtIdBusca = new TextField();
-    txtIdBusca.setPromptText("ID para alterar");
+    TextField txtId = new TextField();
+    txtId.setPromptText("ID da campanha");
 
     Button btnBuscar = new Button("Buscar");
-    btnBuscar.getStyleClass().add("botao-principal");
+    btnBuscar.getStyleClass().add("botao-secundario");
 
-    hbBusca.getChildren().addAll(new Label("ID:"), txtIdBusca, btnBuscar);
+    hbBusca.getChildren().addAll(new Label("ID:"), txtId, btnBuscar);
 
-    GridPane gridForm = new GridPane();
-    gridForm.setAlignment(Pos.CENTER);
-    gridForm.setHgap(10);
-    gridForm.setVgap(10);
-    gridForm.getStyleClass().add("form-grid");
+    // 📋 FORM
+    GridPane grid = new GridPane();
+    grid.setAlignment(Pos.CENTER);
+    grid.setHgap(10);
+    grid.setVgap(10);
 
     TextField txtNome = new TextField();
-    TextField txtLocal = new TextField();
-    DatePicker dpData = new DatePicker();
-    TextField txtCusto = new TextField();
+    TextField txtDesc = new TextField();
+    TextField txtInicio = new TextField();
+    TextField txtFim = new TextField();
 
-    gridForm.add(new Label("Nome:"), 0, 0);
-    gridForm.add(txtNome, 1, 0);
-    gridForm.add(new Label("Local:"), 0, 1);
-    gridForm.add(txtLocal, 1, 1);
-    gridForm.add(new Label("Data:"), 0, 2);
-    gridForm.add(dpData, 1, 2);
-    gridForm.add(new Label("Custo (R$):"), 0, 3);
-    gridForm.add(txtCusto, 1, 3);
+    grid.add(new Label("Nome:"), 0, 0);
+    grid.add(txtNome, 1, 0);
 
-    gridForm.setDisable(true);
+    grid.add(new Label("Descrição:"), 0, 1);
+    grid.add(txtDesc, 1, 1);
 
+    grid.add(new Label("Data Início:"), 0, 2);
+    grid.add(txtInicio, 1, 2);
+
+    grid.add(new Label("Data Fim:"), 0, 3);
+    grid.add(txtFim, 1, 3);
+
+    grid.setDisable(true);
+
+    // 💾 SALVAR
     Button btnSalvar = new Button("Salvar Alterações");
     btnSalvar.getStyleClass().add("botao-principal");
     btnSalvar.setDisable(true);
 
-    layoutPrincipal.getChildren().addAll(hbBusca, gridForm, btnSalvar);
-    return layoutPrincipal;
+    // 🔎 BUSCAR
+    btnBuscar.setOnAction(e -> {
+      try {
+        int id = Integer.parseInt(txtId.getText().trim());
+        Campanha c = controller.buscar(id);
+
+        if (c != null) {
+          idAtual = c.getId();
+          txtNome.setText(c.getNome());
+          txtDesc.setText(c.getDescricao());
+          txtInicio.setText(c.getDataInicio());
+          txtFim.setText(c.getDataFim());
+
+          grid.setDisable(false);
+          btnSalvar.setDisable(false);
+        } else {
+          mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Campanha não encontrada!");
+        }
+
+      } catch (NumberFormatException ex) {
+        mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Digite um ID válido.");
+      } catch (Exception ex) {
+        mostrarAlerta(Alert.AlertType.ERROR, "Erro", ex.getMessage());
+      }
+    });
+
+    // 💾 SALVAR
+    btnSalvar.setOnAction(e -> {
+      try {
+        boolean sucesso = controller.atualizar(
+            idAtual,
+            txtNome.getText(),
+            txtDesc.getText(),
+            txtInicio.getText(),
+            txtFim.getText()
+        );
+
+        if (sucesso) {
+          mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Campanha atualizada!");
+          grid.setDisable(true);
+          btnSalvar.setDisable(true);
+          txtId.clear();
+          idAtual = -1;
+        } else {
+          mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Falha ao atualizar.");
+        }
+
+      } catch (Exception ex) {
+        mostrarAlerta(Alert.AlertType.ERROR, "Erro", ex.getMessage());
+      }
+    });
+
+    layout.getChildren().addAll(hbBusca, grid, btnSalvar);
+    return layout;
+  }
+
+  private void mostrarAlerta(Alert.AlertType tipo, String titulo, String msg) {
+    Alert a = new Alert(tipo);
+    a.setTitle(titulo);
+    a.setHeaderText(null);
+    a.setContentText(msg);
+    a.showAndWait();
   }
 }

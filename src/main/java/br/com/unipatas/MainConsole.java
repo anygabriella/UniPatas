@@ -2,135 +2,153 @@ package br.com.unipatas;
 
 import java.util.*;
 
-import br.com.unipatas.dao.UsuarioDAO;
-import br.com.unipatas.model.Usuario;
+import br.com.unipatas.dao.*;
+import br.com.unipatas.model.*;
 
 public class MainConsole {
+
     public static void main(String[] args) {
+
         Scanner sc = new Scanner(System.in);
+
         try {
+
             UsuarioDAO usuarioDAO = new UsuarioDAO();
+            AbrigoDAO abrigoDAO = new AbrigoDAO();
+            AnimalDAO animalDAO = new AnimalDAO();
+
             int opcao;
+
             do {
-                System.out.println("\n--- MENU CRUD USUÁRIO ---");
-                System.out.println("1 - Criar");
-                System.out.println("2 - Ler");
-                System.out.println("3 - Alterar");
-                System.out.println("4 - Remover");
+                System.out.println("\n===== MENU =====");
+                System.out.println("1 - CRUD Usuario");
+                System.out.println("2 - Criar Abrigo");
+                System.out.println("3 - Criar Animal");
+                System.out.println("4 - Listar Animais por Abrigo");
                 System.out.println("0 - Sair");
+
                 System.out.print("Escolha: ");
                 opcao = sc.nextInt();
                 sc.nextLine();
+
                 switch (opcao) {
+
                     case 1:
-                        System.out.print("Nome: ");
-                        String nome = sc.nextLine();
-                        System.out.print("CPF: ");
-                        String cpf = sc.nextLine();
-                        System.out.print("Email: ");
-                        String email = sc.nextLine();
-                        System.out.print("Senha: ");
-                        String senha = sc.nextLine();
-                        System.out.print("Telefone: ");
-                        String telefone = sc.nextLine();
+                        menuUsuario(sc, usuarioDAO);
+                        break;
+
+                    case 2:
+                        System.out.print("Nome do abrigo: ");
+                        String nomeAbrigo = sc.nextLine();
+
                         System.out.print("Cidade: ");
                         String cidade = sc.nextLine();
-                        System.out.print("Estado: ");
-                        String estado = sc.nextLine();
 
-                        Usuario i = new Usuario(nome, cpf, email, senha, telefone, cidade, estado);
-                        int novoUsuarioID = usuarioDAO.create(i);
+                        System.out.print("Telefone: ");
+                        String telefone = sc.nextLine();
 
-                        System.out.println("---Usuário criado com sucesso---");
-                        System.out.println("ID: " + novoUsuarioID);
-                        System.out.println("Nome: " + nome);
+                        int idAbrigo = abrigoDAO.create(
+                                new Abrigo(nomeAbrigo, cidade, telefone)
+                        );
 
+                        System.out.println("Abrigo criado com ID: " + idAbrigo);
                         break;
-                    case 2:
-                        System.out.print("Nome do usuário: ");
-                        String nomeBusca = sc.nextLine();
-                        Usuario busca = usuarioDAO.read(nomeBusca);
-                        if (busca != null) {
-                            System.out.println("ID: " + busca.getId());
-                            System.out.println("Nome: " + busca.getNome());
-                            System.out.println("CPF: " + busca.getCpf());
-                            System.out.println("Email: " + busca.getEmail());
-                            System.out.println("Telefone: " + busca.getTelefone());
-                            System.out.println("Cidade: " + busca.getCidade());
-                            System.out.println("Estado: " + busca.getEstado());
-                        } else {
-                            System.out.println("---Usuário não encontrado---");
-                        }
-                        break;
+
                     case 3:
-                        System.out.print("Nome do usuário para alteração: ");
-                        String nomeUpdate = sc.nextLine();
-                        Usuario usuarioUpdate = usuarioDAO.read(nomeUpdate);
+                        System.out.print("Nome do animal: ");
+                        String nome = sc.nextLine();
 
-                        if (usuarioUpdate != null) {
-                            System.out.println("---Novos dados---");
-                            System.out.print("Nome: ");
-                            nome = sc.nextLine();
-                            System.out.print("CPF: ");
-                            cpf = sc.nextLine();
-                            System.out.print("Email: ");
-                            email = sc.nextLine();
-                            System.out.print("Senha: ");
-                            senha = sc.nextLine();
-                            System.out.print("Telefone: ");
-                            telefone = sc.nextLine();
-                            System.out.print("Cidade: ");
-                            cidade = sc.nextLine();
-                            System.out.print("Estado: ");
-                            estado = sc.nextLine();
-                            Usuario usuarioAtualizado = new Usuario(usuarioUpdate.getId(), nome, cpf, email, senha, telefone, cidade,
-                                    estado);
+                        System.out.print("Idade: ");
+                        int idade = sc.nextInt();
+                        sc.nextLine();
 
-                            boolean verificaUpdate = usuarioDAO.update(usuarioAtualizado, usuarioUpdate.getNome());
-                            if (verificaUpdate) {
-                                System.out.println("---Usuário atualizado com sucesso---");
-                            } else {
-                                System.out.println("---Erro na atualização---");
-                            }
-                        } else {
-                            System.out.println("---Usuário não encontrado---");
-                        }
+                        System.out.print("Espécie: ");
+                        String especie = sc.nextLine();
+
+                        System.out.print("Raça: ");
+                        String raca = sc.nextLine();
+
+                        System.out.print("ID do Abrigo: ");
+                        int idAbrigoAnimal = sc.nextInt();
+                        sc.nextLine();
+
+                        int idAnimal = animalDAO.create(
+                                new Animal(nome, idade, especie, raca, idAbrigoAnimal)
+                        );
+
+                        System.out.println("Animal criado com ID: " + idAnimal);
                         break;
+
                     case 4:
-                        System.out.print("Nome do usuário para remoção: ");
-                        String nomeRemovido = sc.nextLine();
-                        Usuario usuarioDelete = usuarioDAO.read(nomeRemovido);
-                        if (usuarioDelete != null) {
-                            System.out.println("Deseja realmente excluir " + usuarioDelete.getNome() + "? (S/N)");
-                            char resp = sc.nextLine().toUpperCase().charAt(0);
-                            if (resp == 'S') {
-                                usuarioDAO.delete(nomeRemovido);
-                                System.out.println("---Usuário Removido---");
-                            } else if (resp == 'N') {
-                                System.out.println("---Operação cancelada---");
-                            } else {
-                                System.out.println("---Comando Inválido---");
-                            }
+                        System.out.print("ID do abrigo: ");
+                        int idBusca = sc.nextInt();
+                        sc.nextLine();
 
-                        } else {
-                            System.out.println("---Usuário não encontrado---");
+                        List<Animal> lista = animalDAO.readByAbrigo(idBusca);
+
+                        for (Animal a : lista) {
+                            System.out.println(a.mostrar());
                         }
-                        break;
-                    case 0:
 
                         break;
-                    default:
-                        System.out.println("---Comando Inválido---");
+
+                    case 0:
                         break;
+
+                    default:
+                        System.out.println("Opção inválida");
                 }
 
             } while (opcao != 0);
 
         } catch (Exception e) {
-            System.err.println("Erro no sistema: " + e.getMessage());
             e.printStackTrace();
         }
 
         sc.close();
+    }
+
+    // reutiliza seu menu antigo
+    public static void menuUsuario(Scanner sc, UsuarioDAO usuarioDAO) throws Exception {
+
+        int opcao;
+
+        do {
+            System.out.println("\n--- MENU USUARIO ---");
+            System.out.println("1 - Criar");
+            System.out.println("2 - Ler");
+            System.out.println("0 - Voltar");
+
+            opcao = sc.nextInt();
+            sc.nextLine();
+
+            switch (opcao) {
+
+                case 1:
+                    System.out.print("Nome: ");
+                    String nome = sc.nextLine();
+
+                    Usuario u = new Usuario(nome, "cpf", "email", "123", "tel", "cidade", "estado");
+
+                    int id = usuarioDAO.create(u);
+
+                    System.out.println("Criado com ID: " + id);
+                    break;
+
+                case 2:
+                    System.out.print("Nome: ");
+                    String busca = sc.nextLine();
+
+                    Usuario user = usuarioDAO.read(busca);
+
+                    if (user != null)
+                        System.out.println(user.getNome());
+                    else
+                        System.out.println("Não encontrado");
+
+                    break;
+            }
+
+        } while (opcao != 0);
     }
 }
