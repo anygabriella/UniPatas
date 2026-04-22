@@ -11,71 +11,73 @@ import java.util.Optional;
 
 public class UsuarioRemoverView {
 
-    private UsuarioController controller;
+  private UsuarioController controller;
 
-    public UsuarioRemoverView() {
-        try {
-            this.controller = new UsuarioController();
-        } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao conectar ao banco de dados.");
-        }
+  public UsuarioRemoverView() {
+    try {
+      this.controller = new UsuarioController();
+    } catch (Exception e) {
+      mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao conectar ao banco de dados.");
     }
+  }
 
-    public VBox getConteudo() {
-        VBox layoutPrincipal = new VBox(20);
-        layoutPrincipal.setAlignment(Pos.CENTER);
-        layoutPrincipal.setPadding(new Insets(25));
+  public VBox getConteudo() {
+    VBox layoutPrincipal = new VBox(20);
+    layoutPrincipal.setAlignment(Pos.CENTER);
+    layoutPrincipal.setPadding(new Insets(25));
 
-        // --- Área de Busca ---
-        HBox hbBusca = new HBox(10);
-        hbBusca.setAlignment(Pos.CENTER);
-        TextField txtIdDeletar = new TextField();
-        txtIdDeletar.setPromptText("Nome para excluir");
-        Button btnDeletar = new Button("Excluir Usuário");
-        
-        // Estiliza o botão
-        btnDeletar.setStyle("-fx-background-color: #ff4c4c; -fx-text-fill: white; -fx-font-weight: bold;");
+    HBox hbBusca = new HBox(10);
+    hbBusca.setAlignment(Pos.CENTER);
 
-        hbBusca.getChildren().addAll(new Label("Nome:"), txtIdDeletar, btnDeletar);
+    TextField txtIdDeletar = new TextField();
+    txtIdDeletar.setPromptText("ID do usuário");
+    txtIdDeletar.setPrefWidth(120);
 
-        // AÇÃO DO BOTÃO DELETAR
-        btnDeletar.setOnAction(e -> {
-            try {
-                String nomeDeletar = txtIdDeletar.getText(); // Pega o nome
-                
-                Usuario user = controller.buscarUsuario(nomeDeletar);
+    Button btnDeletar = new Button("Excluir Usuário");
+    btnDeletar.getStyleClass().add("botao-perigo");
 
-                if (user != null) {
-                    Alert confirmacao = new Alert(Alert.AlertType.CONFIRMATION);
-                    confirmacao.setTitle("Confirmação de Exclusão");
-                    confirmacao.setContentText("Deseja realmente excluir o usuário: " + user.getNome() + "?");
+    hbBusca.getChildren().addAll(new Label("ID:"), txtIdDeletar, btnDeletar);
 
-                    Optional<ButtonType> resultado = confirmacao.showAndWait();
-                    if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
-                        
-                        // Passa a STRING para o controller deletar
-                        boolean sucesso = controller.deletarUsuario(nomeDeletar); 
-                        
-                        if (sucesso) {
-                            mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Usuário removido!");
-                            txtIdDeletar.clear();
-                        } else {
-                            mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Não foi possível remover.");
-                        }
-                    }
-                } else {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Usuário não encontrado!");
-                }
-            } catch (Exception ex) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao excluir: " + ex.getMessage());
+    btnDeletar.setOnAction(e -> {
+      try {
+        int id = Integer.parseInt(txtIdDeletar.getText().trim());
+        Usuario user = controller.buscarUsuarioPorId(id);
+
+        if (user != null) {
+          Alert confirmacao = new Alert(Alert.AlertType.CONFIRMATION);
+          confirmacao.setTitle("Confirmação de Exclusão");
+          confirmacao
+              .setContentText("Deseja realmente excluir o usuário: " + user.getNome() + " (ID: " + user.getId() + ")?");
+
+          Optional<ButtonType> resultado = confirmacao.showAndWait();
+          if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            boolean sucesso = controller.deletarUsuarioPorId(id);
+            if (sucesso) {
+              mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Usuário removido!");
+              txtIdDeletar.clear();
+            } else {
+              mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Não foi possível remover.");
             }
-        });
+          }
+        } else {
+          mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Usuário não encontrado!");
+        }
+      } catch (NumberFormatException ex) {
+        mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Digite um ID numérico válido.");
+      } catch (Exception ex) {
+        mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao excluir: " + ex.getMessage());
+      }
+    });
 
-        layoutPrincipal.getChildren().addAll(hbBusca);
-        return layoutPrincipal;
-    }
+    layoutPrincipal.getChildren().add(hbBusca);
+    return layoutPrincipal;
+  }
 
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensagem) {
-        Alert alerta = new Alert(tipo); alerta.setTitle(titulo); alerta.setHeaderText(null); alerta.setContentText(mensagem); alerta.showAndWait();
-    }
+  private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensagem) {
+    Alert alerta = new Alert(tipo);
+    alerta.setTitle(titulo);
+    alerta.setHeaderText(null);
+    alerta.setContentText(mensagem);
+    alerta.showAndWait();
+  }
 }

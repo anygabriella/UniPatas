@@ -9,42 +9,23 @@ import java.util.Optional;
 
 public class CampanhaRemoverView {
 
-    public VBox getConteudo() {
-        VBox layoutPrincipal = new VBox(20);
-        layoutPrincipal.setAlignment(Pos.CENTER);
-        layoutPrincipal.setPadding(new Insets(25));
+  public VBox getConteudo() {
+    VBox layoutPrincipal = new VBox(20);
+    layoutPrincipal.setAlignment(Pos.CENTER);
+    layoutPrincipal.setPadding(new Insets(25));
 
-        HBox hbBusca = new HBox(10);
-        hbBusca.setAlignment(Pos.CENTER);
-        TextField txtIdDeletar = new TextField();
-        txtIdDeletar.setPromptText("ID para excluir");
-        
-        Button btnDeletar = new Button("Excluir Campanha");
-        btnDeletar.setStyle("-fx-background-color: #ff4c4c; -fx-text-fill: white; -fx-font-weight: bold;");
+    HBox hbBusca = new HBox(10);
+    hbBusca.setAlignment(Pos.CENTER);
 
-        hbBusca.getChildren().addAll(new Label("ID:"), txtIdDeletar, btnDeletar);
+    TextField txtIdDeletar = new TextField();
+    txtIdDeletar.setPromptText("ID para excluir");
 
-        // AÇÃO DELETAR (Mocking)
-        btnDeletar.setOnAction(e -> {
-            if (txtIdDeletar.getText().equals("1")) {
-                Alert confirmacao = new Alert(Alert.AlertType.CONFIRMATION);
-                confirmacao.setTitle("Confirmação");
-                confirmacao.setHeaderText("Atenção!");
-                confirmacao.setContentText("Deseja realmente excluir a campanha: Feira de Adoção de Inverno?");
+    Button btnDeletar = new Button("Excluir Campanha");
+    btnDeletar.getStyleClass().add("botao-perigo"); // padrão correto
 
-                Optional<ButtonType> resultado = confirmacao.showAndWait();
-                if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
-                    Alert sucesso = new Alert(Alert.AlertType.INFORMATION, "Simulação: Campanha removida!");
-                    sucesso.showAndWait();
-                    txtIdDeletar.clear();
-                }
-            } else {
-                Alert alerta = new Alert(Alert.AlertType.WARNING, "Campanha não encontrada!");
-                alerta.showAndWait();
-            }
-        });
+    hbBusca.getChildren().addAll(new Label("ID:"), txtIdDeletar, btnDeletar);
 
-        layoutPrincipal.getChildren().add(hbBusca);
-        return layoutPrincipal;
-    }
+    layoutPrincipal.getChildren().add(hbBusca);
+    return layoutPrincipal;
+  }
 }

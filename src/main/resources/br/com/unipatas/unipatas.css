@@ -1,0 +1,433 @@
+/* =====================================================
+   UniPatas — Stylesheet JavaFX
+   Estilo: Moderno Minimalista · Temática Pets · Laranja
+   Arquivo: src/main/resources/br/com/unipatas/unipatas.css
+   ===================================================== */
+
+/* ── GLOBAL ── */
+.root {
+  -fx-font-family: "Segoe UI", "Arial", sans-serif;
+  -fx-font-size: 13px;
+  -fx-background-color: #fafafa;
+}
+
+/* ══════════════════════════════════════════════
+   SIDEBAR / MENU LATERAL
+   ══════════════════════════════════════════════ */
+.menu-lateral {
+  -fx-background-color: #1e1e2e;
+  -fx-padding: 0;
+  -fx-spacing: 4px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 16, 0, 4, 0);
+}
+
+.menu-titulo {
+  -fx-text-fill: white;
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+  -fx-padding: 28px 20px 24px 20px;
+  -fx-background-color: #16213e;
+  -fx-pref-width: 200px;
+}
+
+.menu-botao {
+  -fx-background-color: transparent;
+  -fx-text-fill: #9ca3af;
+  -fx-font-size: 13px;
+  -fx-font-weight: normal;
+  -fx-alignment: center-left;
+  -fx-padding: 12px 20px;
+  -fx-cursor: hand;
+  -fx-background-radius: 0;
+  -fx-border-radius: 0;
+  -fx-pref-width: 200px;
+}
+
+.menu-botao:hover {
+  -fx-background-color: #2a2a3e;
+  -fx-text-fill: #f3f4f6;
+}
+
+.menu-botao:pressed {
+  -fx-background-color: #f77f00;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+}
+
+/* ══════════════════════════════════════════════
+   BOAS-VINDAS
+   ══════════════════════════════════════════════ */
+.tela-boas-vindas {
+  -fx-background-color: #fafafa;
+  -fx-alignment: center;
+  -fx-spacing: 12px;
+  -fx-padding: 40px;
+}
+
+.label-boas-vindas {
+  -fx-font-size: 22px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #2d2d2d;
+}
+
+.label-boas-vindas-sub {
+  -fx-font-size: 14px;
+  -fx-text-fill: #9ca3af;
+}
+
+/* ══════════════════════════════════════════════
+   TAB PANE
+   ══════════════════════════════════════════════ */
+.tab-pane {
+  -fx-background-color: #fafafa;
+  -fx-tab-min-width: 100px;
+}
+
+.tab-pane .tab-header-area {
+  -fx-background-color: #ffffff;
+  -fx-border-color: transparent transparent #e5e7eb transparent;
+  -fx-border-width: 0 0 1.5px 0;
+  -fx-padding: 0 0 0 16px;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+  -fx-background-color: #ffffff;
+}
+
+.tab-pane .tab {
+  -fx-background-color: transparent;
+  -fx-padding: 10px 18px;
+  -fx-cursor: hand;
+  -fx-background-radius: 0;
+  -fx-border-color: transparent;
+}
+
+.tab-pane .tab:selected {
+  -fx-background-color: transparent;
+  -fx-border-color: transparent transparent #f77f00 transparent;
+  -fx-border-width: 0 0 2.5px 0;
+}
+
+.tab-pane .tab .tab-label {
+  -fx-text-fill: #9ca3af;
+  -fx-font-weight: normal;
+  -fx-font-size: 13px;
+}
+
+.tab-pane .tab:selected .tab-label {
+  -fx-text-fill: #f77f00;
+  -fx-font-weight: bold;
+}
+
+.tab-pane .tab-content-area {
+  -fx-background-color: #fafafa;
+  -fx-padding: 0;
+}
+
+/* ══════════════════════════════════════════════
+   CARD / FORMULÁRIO
+   ══════════════════════════════════════════════ */
+.form-grid {
+  -fx-background-color: #ffffff;
+  -fx-background-radius: 14px;
+  -fx-border-color: #e5e7eb;
+  -fx-border-radius: 14px;
+  -fx-border-width: 1px;
+  -fx-hgap: 12px;
+  -fx-vgap: 14px;
+  -fx-padding: 32px 36px;
+  -fx-alignment: center;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 12, 0, 0, 3);
+}
+
+.form-grid .label {
+  -fx-text-fill: #6b7280;
+  -fx-font-size: 12px;
+  -fx-font-weight: bold;
+}
+
+/* ══════════════════════════════════════════════
+   CAMPOS DE ENTRADA
+   ══════════════════════════════════════════════ */
+.text-field,
+.password-field,
+.text-area {
+  -fx-background-color: #f9fafb;
+  -fx-border-color: #e5e7eb;
+  -fx-border-radius: 8px;
+  -fx-background-radius: 8px;
+  -fx-padding: 9px 13px;
+  -fx-font-size: 13px;
+  -fx-text-fill: #2d2d2d;
+  -fx-prompt-text-fill: #d1d5db;
+  -fx-pref-width: 230px;
+}
+
+.text-field:focused,
+.password-field:focused,
+.text-area:focused {
+  -fx-border-color: #f77f00;
+  -fx-background-color: #ffffff;
+  -fx-effect: dropshadow(gaussian, rgba(247, 127, 0, 0.18), 8, 0, 0, 0);
+}
+
+.text-field:disabled,
+.password-field:disabled {
+  -fx-opacity: 0.5;
+  -fx-background-color: #f3f4f6;
+}
+
+.combo-box {
+  -fx-background-color: #f9fafb;
+  -fx-border-color: #e5e7eb;
+  -fx-border-radius: 8px;
+  -fx-background-radius: 8px;
+  -fx-pref-width: 230px;
+}
+
+.combo-box:focused {
+  -fx-border-color: #f77f00;
+}
+
+/* ══════════════════════════════════════════════
+   BOTÕES
+   ══════════════════════════════════════════════ */
+.botao-principal {
+  -fx-background-color: #f77f00;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-font-size: 13px;
+  -fx-padding: 10px 28px;
+  -fx-background-radius: 8px;
+  -fx-cursor: hand;
+  -fx-effect: dropshadow(gaussian, rgba(247, 127, 0, 0.35), 10, 0, 0, 3);
+}
+
+.botao-principal:hover {
+  -fx-background-color: #e07200;
+  -fx-effect: dropshadow(gaussian, rgba(247, 127, 0, 0.50), 14, 0, 0, 4);
+}
+
+.botao-principal:pressed {
+  -fx-background-color: #c96500;
+  -fx-effect: none;
+  -fx-translate-y: 1px;
+}
+
+.botao-principal:disabled {
+  -fx-opacity: 0.45;
+  -fx-effect: none;
+}
+
+.botao-secundario {
+  -fx-background-color: transparent;
+  -fx-text-fill: #f77f00;
+  -fx-font-size: 13px;
+  -fx-font-weight: bold;
+  -fx-padding: 10px 24px;
+  -fx-background-radius: 8px;
+  -fx-border-radius: 8px;
+  -fx-border-color: #f77f00;
+  -fx-border-width: 1.5px;
+  -fx-cursor: hand;
+}
+
+.botao-secundario:hover {
+  -fx-background-color: #fff3e0;
+}
+
+.botao-secundario:pressed {
+  -fx-background-color: #ffe0b2;
+}
+
+.botao-perigo {
+  -fx-background-color: #ef4444;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-font-size: 13px;
+  -fx-padding: 10px 28px;
+  -fx-background-radius: 8px;
+  -fx-cursor: hand;
+  -fx-effect: dropshadow(gaussian, rgba(239, 68, 68, 0.30), 10, 0, 0, 3);
+}
+
+.botao-perigo:hover {
+  -fx-background-color: #dc2626;
+  -fx-effect: dropshadow(gaussian, rgba(239, 68, 68, 0.45), 14, 0, 0, 4);
+}
+
+.botao-perigo:pressed {
+  -fx-background-color: #b91c1c;
+  -fx-effect: none;
+  -fx-translate-y: 1px;
+}
+
+/* ══════════════════════════════════════════════
+   TABLEVIEW
+   ══════════════════════════════════════════════ */
+.table-view {
+  -fx-background-color: #ffffff;
+  -fx-border-color: #e5e7eb;
+  -fx-border-radius: 12px;
+  -fx-background-radius: 12px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 10, 0, 0, 2);
+}
+
+.table-view .column-header-background {
+  -fx-background-color: #f9fafb;
+  -fx-background-radius: 12px 12px 0 0;
+}
+
+.table-view .column-header {
+  -fx-background-color: transparent;
+  -fx-padding: 10px 14px;
+  -fx-border-color: transparent transparent #e5e7eb transparent;
+  -fx-border-width: 0 0 1.5px 0;
+}
+
+.table-view .column-header .label {
+  -fx-text-fill: #6b7280;
+  -fx-font-weight: bold;
+  -fx-font-size: 11px;
+}
+
+.table-view .table-row-cell {
+  -fx-background-color: #ffffff;
+  -fx-border-color: transparent transparent #f3f4f6 transparent;
+  -fx-padding: 2px 0;
+  -fx-font-size: 13px;
+  -fx-text-fill: #2d2d2d;
+}
+
+.table-view .table-row-cell:odd {
+  -fx-background-color: #fafafa;
+}
+
+.table-view .table-row-cell:selected {
+  -fx-background-color: #fff3e0;
+  -fx-text-fill: #2d2d2d;
+}
+
+.table-view .table-row-cell:hover {
+  -fx-background-color: #fff8f0;
+}
+
+.table-view .table-cell {
+  -fx-padding: 10px 14px;
+  -fx-border-color: transparent;
+}
+
+.table-view .scroll-bar:vertical {
+  -fx-background-color: #fafafa;
+  -fx-pref-width: 8px;
+}
+
+.table-view .scroll-bar:vertical .thumb {
+  -fx-background-color: #d1d5db;
+  -fx-background-radius: 4px;
+}
+
+.table-view .scroll-bar:vertical .thumb:hover {
+  -fx-background-color: #f77f00;
+}
+
+/* ══════════════════════════════════════════════
+   SCROLLBAR GLOBAL
+   ══════════════════════════════════════════════ */
+.scroll-bar {
+  -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+  -fx-background-color: #d1d5db;
+  -fx-background-radius: 4px;
+}
+
+.scroll-bar .thumb:hover {
+  -fx-background-color: #f77f00;
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+  -fx-background-color: transparent;
+  -fx-padding: 0;
+}
+
+/* ══════════════════════════════════════════════
+   ALERTAS / DIÁLOGOS
+   ══════════════════════════════════════════════ */
+.dialog-pane {
+  -fx-background-color: #ffffff;
+  -fx-border-color: #e5e7eb;
+  -fx-border-radius: 14px;
+  -fx-background-radius: 14px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.18), 24, 0, 0, 8);
+  -fx-padding: 8px;
+}
+
+.dialog-pane .content.label {
+  -fx-font-size: 14px;
+  -fx-text-fill: #2d2d2d;
+  -fx-padding: 8px 0 16px 0;
+}
+
+.dialog-pane .header-panel {
+  -fx-background-color: #ffffff;
+  -fx-padding: 16px 20px 8px 20px;
+}
+
+.dialog-pane .header-panel .label {
+  -fx-text-fill: #2d2d2d;
+  -fx-font-weight: bold;
+  -fx-font-size: 16px;
+}
+
+.dialog-pane .button-bar .button {
+  -fx-background-color: #f77f00;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-background-radius: 8px;
+  -fx-cursor: hand;
+  -fx-padding: 8px 20px;
+}
+
+.dialog-pane .button-bar .button:hover {
+  -fx-background-color: #e07200;
+}
+
+/* ══════════════════════════════════════════════
+   LABELS AUXILIARES
+   ══════════════════════════════════════════════ */
+.label-secao {
+  -fx-font-size: 15px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #2d2d2d;
+  -fx-padding: 0 0 4px 0;
+}
+
+.label-resultado {
+  -fx-font-size: 13px;
+  -fx-text-fill: #2d2d2d;
+  -fx-font-weight: bold;
+}
+
+/* ══════════════════════════════════════════════
+   BADGES DE STATUS (para animais, adoções, etc.)
+   ══════════════════════════════════════════════ */
+.badge-disponivel {
+  -fx-background-color: #dcfce7;
+  -fx-text-fill: #16a34a;
+  -fx-font-size: 11px;
+  -fx-font-weight: bold;
+  -fx-background-radius: 20px;
+  -fx-padding: 3px 10px;
+}
+
+.badge-adotado {
+  -fx-background-color: #fff3e0;
+  -fx-text-fill: #f77f00;
+  -fx-font-size: 11px;
+  -fx-font-weight: bold;
+  -fx-background-radius: 20px;
+  -fx-padding: 3px 10px;
+}

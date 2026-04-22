@@ -9,68 +9,49 @@ import javafx.scene.layout.VBox;
 
 public class AbrigoAtualizarView {
 
-    public VBox getConteudo() {
-        VBox layoutPrincipal = new VBox(20);
-        layoutPrincipal.setAlignment(Pos.CENTER);
-        layoutPrincipal.setPadding(new Insets(25));
+  public VBox getConteudo() {
+    VBox layoutPrincipal = new VBox(20);
+    layoutPrincipal.setAlignment(Pos.CENTER);
+    layoutPrincipal.setPadding(new Insets(25));
 
-        // --- 1. ÁREA DE BUSCA ---
-        HBox hbBusca = new HBox(10);
-        hbBusca.setAlignment(Pos.CENTER);
-        TextField txtIdBusca = new TextField();
-        txtIdBusca.setPromptText("ID para alterar");
-        Button btnBuscar = new Button("Buscar");
-        hbBusca.getChildren().addAll(new Label("ID:"), txtIdBusca, btnBuscar);
+    HBox hbBusca = new HBox(10);
+    hbBusca.setAlignment(Pos.CENTER);
 
-        // --- 2. ÁREA DO FORMULÁRIO ---
-        GridPane gridForm = new GridPane();
-        gridForm.setAlignment(Pos.CENTER);
-        gridForm.setHgap(10); gridForm.setVgap(10);
+    TextField txtIdBusca = new TextField();
+    txtIdBusca.setPromptText("ID para alterar");
 
-        TextField txtNome = new TextField();
-        TextField txtEndereco = new TextField();
-        TextField txtTelefone = new TextField();
-        TextField txtCusto = new TextField();
+    Button btnBuscar = new Button("Buscar");
+    btnBuscar.getStyleClass().add("botao-principal");
 
-        gridForm.add(new Label("Nome:"), 0, 0); gridForm.add(txtNome, 1, 0);
-        gridForm.add(new Label("Endereço:"), 0, 1); gridForm.add(txtEndereco, 1, 1);
-        gridForm.add(new Label("Telefone:"), 0, 2); gridForm.add(txtTelefone, 1, 2);
-        gridForm.add(new Label("Custo Mensal:"), 0, 3); gridForm.add(txtCusto, 1, 3);
+    hbBusca.getChildren().addAll(new Label("ID:"), txtIdBusca, btnBuscar);
 
-        gridForm.setDisable(true); // Começa travado
+    GridPane gridForm = new GridPane();
+    gridForm.setAlignment(Pos.CENTER);
+    gridForm.setHgap(10);
+    gridForm.setVgap(10);
+    gridForm.getStyleClass().add("form-grid");
 
-        // --- 3. BOTÃO SALVAR ---
-        Button btnSalvar = new Button("Salvar Alterações");
-        btnSalvar.setDisable(true);
+    TextField txtNome = new TextField();
+    TextField txtEndereco = new TextField();
+    TextField txtTelefone = new TextField();
+    TextField txtCusto = new TextField();
 
-        // AÇÃO BUSCAR (Mocking)
-        btnBuscar.setOnAction(e -> {
-            if (txtIdBusca.getText().equals("1")) {
-                txtNome.setText("Abrigo Esperança");
-                txtEndereco.setText("Rua das Flores, 123");
-                txtTelefone.setText("(31) 98765-4321");
-                txtCusto.setText("2500.00");
-                
-                gridForm.setDisable(false); // Destrava
-                btnSalvar.setDisable(false);
-            } else {
-                Alert alerta = new Alert(Alert.AlertType.WARNING, "Abrigo não encontrado!");
-                alerta.showAndWait();
-                gridForm.setDisable(true);
-                btnSalvar.setDisable(true);
-            }
-        });
+    gridForm.add(new Label("Nome:"), 0, 0);
+    gridForm.add(txtNome, 1, 0);
+    gridForm.add(new Label("Endereço:"), 0, 1);
+    gridForm.add(txtEndereco, 1, 1);
+    gridForm.add(new Label("Telefone:"), 0, 2);
+    gridForm.add(txtTelefone, 1, 2);
+    gridForm.add(new Label("Custo Mensal:"), 0, 3);
+    gridForm.add(txtCusto, 1, 3);
 
-        // AÇÃO SALVAR (Mocking)
-        btnSalvar.setOnAction(e -> {
-            Alert alerta = new Alert(Alert.AlertType.INFORMATION, "Simulação: Abrigo atualizado!");
-            alerta.showAndWait();
-            gridForm.setDisable(true);
-            btnSalvar.setDisable(true);
-            txtIdBusca.clear();
-        });
+    gridForm.setDisable(true);
 
-        layoutPrincipal.getChildren().addAll(hbBusca, gridForm, btnSalvar);
-        return layoutPrincipal;
-    }
+    Button btnSalvar = new Button("Salvar Alterações");
+    btnSalvar.getStyleClass().add("botao-principal");
+    btnSalvar.setDisable(true);
+
+    layoutPrincipal.getChildren().addAll(hbBusca, gridForm, btnSalvar);
+    return layoutPrincipal;
+  }
 }
