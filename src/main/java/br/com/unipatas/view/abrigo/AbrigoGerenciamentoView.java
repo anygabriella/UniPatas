@@ -38,10 +38,4 @@ public class AbrigoGerenciamentoView {
         return tabPane;
     }
 
-    private VBox criarAbaProvisoria(String mensagem) {
-        VBox vbox = new VBox();
-        vbox.setAlignment(Pos.CENTER);
-        vbox.getChildren().add(new Label(mensagem));
-        return vbox;
-    }
 }

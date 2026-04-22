@@ -12,7 +12,8 @@ import javafx.scene.layout.VBox;
 public class UsuarioAtualizarView {
 
     private UsuarioController controller;
-    private int idAtual = -1; // Guarda o ID do usuário que estamos editando
+    private String nomeAtual = "";
+    private int idAtual = -1;
 
     public UsuarioAtualizarView() {
         try {
@@ -31,9 +32,9 @@ public class UsuarioAtualizarView {
         HBox hbBusca = new HBox(10);
         hbBusca.setAlignment(Pos.CENTER);
         TextField txtIdBusca = new TextField();
-        txtIdBusca.setPromptText("ID para alterar");
+        txtIdBusca.setPromptText("Nome para alterar");
         Button btnBuscar = new Button("Buscar");
-        hbBusca.getChildren().addAll(new Label("ID:"), txtIdBusca, btnBuscar);
+        hbBusca.getChildren().addAll(new Label("Nome:"), txtIdBusca, btnBuscar);
 
         // --- 2. Área do Formulário (Inicialmente Desativada) ---
         GridPane gridForm = new GridPane();
@@ -66,11 +67,12 @@ public class UsuarioAtualizarView {
         // AÇÃO DO BOTÃO BUSCAR
         btnBuscar.setOnAction(e -> {
             try {
-                int id = Integer.parseInt(txtIdBusca.getText());
-                Usuario user = controller.buscarUsuario(id);
+                String nomeBuscado = txtIdBusca.getText(); 
+                Usuario user = controller.buscarUsuario(nomeBuscado);
 
                 if (user != null) {
                     idAtual = user.getId(); 
+                    nomeAtual = user.getNome();
                     // Preenche os campos com os dados antigos
                     txtNome.setText(user.getNome());
                     txtCpf.setText(user.getCpf());
@@ -96,7 +98,7 @@ public class UsuarioAtualizarView {
         btnSalvar.setOnAction(e -> {
             try {
                 boolean sucesso = controller.atualizarUsuario(
-                        idAtual, txtNome.getText(), txtCpf.getText(), txtEmail.getText(),
+                        nomeAtual, idAtual, txtNome.getText(), txtCpf.getText(), txtEmail.getText(),
                         txtSenha.getText(), txtTelefone.getText(), txtCidade.getText(), txtEstado.getText()
                 );
 

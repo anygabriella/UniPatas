@@ -3,7 +3,6 @@ package br.com.unipatas.view.usuario;
 import br.com.unipatas.controller.UsuarioController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;

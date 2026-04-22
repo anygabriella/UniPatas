@@ -1,10 +1,8 @@
 package br.com.unipatas.view.animal;
 
-import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.VBox;
-import javafx.geometry.Pos;
+
 
 public class AnimalGerenciamentoView {
 

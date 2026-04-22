@@ -1,8 +1,6 @@
 package br.com.unipatas.dao;
 
 import java.io.*;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -89,7 +87,6 @@ public class UsuarioDAO {
 
         arq.seek(pos);
         byte lapide = arq.readByte();
-        short tam = arq.readShort();
 
         if (lapide == 1) return false;
 

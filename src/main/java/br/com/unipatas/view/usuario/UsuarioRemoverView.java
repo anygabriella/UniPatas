@@ -30,35 +30,32 @@ public class UsuarioRemoverView {
         HBox hbBusca = new HBox(10);
         hbBusca.setAlignment(Pos.CENTER);
         TextField txtIdDeletar = new TextField();
-        txtIdDeletar.setPromptText("ID para excluir");
+        txtIdDeletar.setPromptText("Nome para excluir");
         Button btnDeletar = new Button("Excluir Usuário");
         
         // Estiliza o botão
         btnDeletar.setStyle("-fx-background-color: #ff4c4c; -fx-text-fill: white; -fx-font-weight: bold;");
 
-        hbBusca.getChildren().addAll(new Label("ID:"), txtIdDeletar, btnDeletar);
+        hbBusca.getChildren().addAll(new Label("Nome:"), txtIdDeletar, btnDeletar);
 
         // AÇÃO DO BOTÃO DELETAR
         btnDeletar.setOnAction(e -> {
             try {
-                int id = Integer.parseInt(txtIdDeletar.getText());
+                String nomeDeletar = txtIdDeletar.getText(); // Pega o nome
                 
-                // Buscar para ter certeza que existe e mostrar o nome
-                Usuario user = controller.buscarUsuario(id);
+                Usuario user = controller.buscarUsuario(nomeDeletar);
 
                 if (user != null) {
-                    // Pedir confirmação 
                     Alert confirmacao = new Alert(Alert.AlertType.CONFIRMATION);
                     confirmacao.setTitle("Confirmação de Exclusão");
-                    confirmacao.setHeaderText("Atenção!");
                     confirmacao.setContentText("Deseja realmente excluir o usuário: " + user.getNome() + "?");
 
-                    // Espera a resposta do usuário
                     Optional<ButtonType> resultado = confirmacao.showAndWait();
-                    
                     if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
-                        // Se confirmou, deleta
-                        boolean sucesso = controller.deletarUsuario(id);
+                        
+                        // Passa a STRING para o controller deletar
+                        boolean sucesso = controller.deletarUsuario(nomeDeletar); 
+                        
                         if (sucesso) {
                             mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Usuário removido!");
                             txtIdDeletar.clear();
@@ -69,8 +66,6 @@ public class UsuarioRemoverView {
                 } else {
                     mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Usuário não encontrado!");
                 }
-            } catch (NumberFormatException ex) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Digite um ID numérico válido.");
             } catch (Exception ex) {
                 mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao excluir: " + ex.getMessage());
             }
