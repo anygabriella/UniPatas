@@ -27,31 +27,47 @@ public class CampanhaCadastroView {
     grid.getStyleClass().add("form-grid");
 
     TextField txtNome = new TextField();
-    TextField txtDescricao = new TextField();
-    TextField txtInicio = new TextField();
-    TextField txtFim = new TextField();
+    TextField txtLocal = new TextField();
+    TextField txtData = new TextField();
+    TextField txtCusto = new TextField();
 
     grid.add(new Label("Nome:"), 0, 0);
     grid.add(txtNome, 1, 0);
-    grid.add(new Label("Descrição:"), 0, 1);
-    grid.add(txtDescricao, 1, 1);
-    grid.add(new Label("Data Início:"), 0, 2);
-    grid.add(txtInicio, 1, 2);
-    grid.add(new Label("Data Fim:"), 0, 3);
-    grid.add(txtFim, 1, 3);
+
+    grid.add(new Label("Local:"), 0, 1);
+    grid.add(txtLocal, 1, 1);
+
+    grid.add(new Label("Data:"), 0, 2);
+    grid.add(txtData, 1, 2);
+
+    grid.add(new Label("Custo:"), 0, 3);
+    grid.add(txtCusto, 1, 3);
 
     Button btn = new Button("Salvar");
     btn.getStyleClass().add("botao-principal");
 
     btn.setOnAction(e -> {
       try {
+
+        double custo = Double.parseDouble(txtCusto.getText());
+
         int id = controller.cadastrar(
             txtNome.getText(),
-            txtDescricao.getText(),
-            txtInicio.getText(),
-            txtFim.getText());
+            txtLocal.getText(),
+            txtData.getText(),
+            custo
+        );
 
-        mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "ID: " + id);
+        mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Campanha criada! ID: " + id);
+
+        // limpar campos
+        txtNome.clear();
+        txtLocal.clear();
+        txtData.clear();
+        txtCusto.clear();
+
+      } catch (NumberFormatException ex) {
+        mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Custo deve ser numérico.");
       } catch (Exception ex) {
         mostrarAlerta(Alert.AlertType.ERROR, "Erro", ex.getMessage());
       }
@@ -61,7 +77,11 @@ public class CampanhaCadastroView {
     return grid;
   }
 
-  private void mostrarAlerta(Alert.AlertType t, String ti, String m) {
-    new Alert(t, m).showAndWait();
+  private void mostrarAlerta(Alert.AlertType t, String titulo, String msg) {
+    Alert a = new Alert(t);
+    a.setTitle(titulo);
+    a.setHeaderText(null);
+    a.setContentText(msg);
+    a.showAndWait();
   }
 }

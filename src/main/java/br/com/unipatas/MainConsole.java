@@ -41,14 +41,18 @@ public class MainConsole {
                         System.out.print("Nome do abrigo: ");
                         String nomeAbrigo = sc.nextLine();
 
-                        System.out.print("Cidade: ");
-                        String cidade = sc.nextLine();
+                        System.out.print("Endereço: ");
+                        String endereco = sc.nextLine();
 
                         System.out.print("Telefone: ");
                         String telefone = sc.nextLine();
 
+                        System.out.print("Custo Mensal: ");
+                        double custoMensal = sc.nextDouble();
+                        sc.nextLine();
+
                         int idAbrigo = abrigoDAO.create(
-                                new Abrigo(nomeAbrigo, cidade, telefone)
+                                new Abrigo(nomeAbrigo, endereco, telefone, custoMensal)
                         );
 
                         System.out.println("Abrigo criado com ID: " + idAbrigo);
@@ -58,22 +62,25 @@ public class MainConsole {
                         System.out.print("Nome do animal: ");
                         String nome = sc.nextLine();
 
-                        System.out.print("Idade: ");
-                        int idade = sc.nextInt();
-                        sc.nextLine();
-
-                        System.out.print("Espécie: ");
-                        String especie = sc.nextLine();
-
                         System.out.print("Raça: ");
                         String raca = sc.nextLine();
+
+                        System.out.print("Porte: ");
+                        String porte = sc.nextLine();
+
+                        System.out.print("Peso: ");
+                        float peso = sc.nextFloat();
+                        sc.nextLine();
+
+                        System.out.print("Data de adoção: ");
+                        String data = sc.nextLine();
 
                         System.out.print("ID do Abrigo: ");
                         int idAbrigoAnimal = sc.nextInt();
                         sc.nextLine();
 
                         int idAnimal = animalDAO.create(
-                                new Animal(nome, idade, especie, raca, idAbrigoAnimal)
+                                new Animal(nome, raca, porte, peso, data, idAbrigoAnimal)
                         );
 
                         System.out.println("Animal criado com ID: " + idAnimal);
@@ -86,13 +93,18 @@ public class MainConsole {
 
                         List<Animal> lista = animalDAO.readByAbrigo(idBusca);
 
-                        for (Animal a : lista) {
-                            System.out.println(a.mostrar());
+                        if (lista.isEmpty()) {
+                            System.out.println("Nenhum animal encontrado.");
+                        } else {
+                            for (Animal a : lista) {
+                                System.out.println(a.mostrar());
+                            }
                         }
 
                         break;
 
                     case 0:
+                        System.out.println("Saindo...");
                         break;
 
                     default:
@@ -108,7 +120,7 @@ public class MainConsole {
         sc.close();
     }
 
-    // reutiliza seu menu antigo
+    // MENU USUÁRIO
     public static void menuUsuario(Scanner sc, UsuarioDAO usuarioDAO) throws Exception {
 
         int opcao;
@@ -116,9 +128,10 @@ public class MainConsole {
         do {
             System.out.println("\n--- MENU USUARIO ---");
             System.out.println("1 - Criar");
-            System.out.println("2 - Ler");
+            System.out.println("2 - Ler por ID");
             System.out.println("0 - Voltar");
 
+            System.out.print("Escolha: ");
             opcao = sc.nextInt();
             sc.nextLine();
 
@@ -135,18 +148,19 @@ public class MainConsole {
                     System.out.println("Criado com ID: " + id);
                     break;
 
-                case 2:
-                    System.out.print("Nome: ");
-                    String busca = sc.nextLine();
+                    case 2:
+                        System.out.print("ID: ");
+                        int idBusca = sc.nextInt();
+                        sc.nextLine();
 
-                    Usuario user = usuarioDAO.read(busca);
+                        Usuario user = usuarioDAO.readById(idBusca);
 
-                    if (user != null)
-                        System.out.println(user.getNome());
-                    else
-                        System.out.println("Não encontrado");
+                        if (user != null)
+                            System.out.println(user.getNome());
+                        else
+                            System.out.println("Não encontrado");
 
-                    break;
+                        break;
             }
 
         } while (opcao != 0);

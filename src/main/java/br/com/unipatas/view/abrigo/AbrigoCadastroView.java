@@ -29,6 +29,7 @@ public class AbrigoCadastroView {
     TextField txtNome = new TextField();
     TextField txtCidade = new TextField();
     TextField txtTelefone = new TextField();
+    TextField txtCusto = new TextField(); 
 
     grid.add(new Label("Nome:"), 0, 0);
     grid.add(txtNome, 1, 0);
@@ -39,6 +40,9 @@ public class AbrigoCadastroView {
     grid.add(new Label("Telefone:"), 0, 2);
     grid.add(txtTelefone, 1, 2);
 
+    grid.add(new Label("Custo Mensal:"), 0, 3);
+    grid.add(txtCusto, 1, 3);
+
     Button btnSalvar = new Button("Salvar Abrigo");
     btnSalvar.getStyleClass().add("botao-principal");
 
@@ -46,14 +50,18 @@ public class AbrigoCadastroView {
     hb.setAlignment(Pos.BOTTOM_RIGHT);
     hb.getChildren().add(btnSalvar);
 
-    grid.add(hb, 1, 3);
+    grid.add(hb, 1, 4);
 
     btnSalvar.setOnAction(e -> {
       try {
+
+        long custo = Long.parseLong(txtCusto.getText()); 
+
         int id = controller.cadastrar(
             txtNome.getText(),
             txtCidade.getText(),
-            txtTelefone.getText()
+            txtTelefone.getText(),
+            custo 
         );
 
         mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Abrigo criado! ID: " + id);
@@ -61,7 +69,10 @@ public class AbrigoCadastroView {
         txtNome.clear();
         txtCidade.clear();
         txtTelefone.clear();
+        txtCusto.clear(); 
 
+      } catch (NumberFormatException ex) {
+        mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Digite um custo válido.");
       } catch (Exception ex) {
         mostrarAlerta(Alert.AlertType.ERROR, "Erro", ex.getMessage());
       }

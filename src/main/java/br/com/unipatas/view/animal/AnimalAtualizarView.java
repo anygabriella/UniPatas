@@ -2,12 +2,9 @@ package br.com.unipatas.view.animal;
 
 import br.com.unipatas.controller.AnimalController;
 import br.com.unipatas.model.Animal;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import javafx.geometry.*;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 public class AnimalAtualizarView {
 
@@ -23,24 +20,24 @@ public class AnimalAtualizarView {
   }
 
   public VBox getConteudo() {
+
     VBox layoutPrincipal = new VBox(20);
     layoutPrincipal.setAlignment(Pos.CENTER);
     layoutPrincipal.setPadding(new Insets(25));
 
-    // 🔍 BUSCA
+    
     HBox hbBusca = new HBox(10);
     hbBusca.setAlignment(Pos.CENTER);
 
     TextField txtIdBusca = new TextField();
     txtIdBusca.setPromptText("ID do Animal");
-    txtIdBusca.setPrefWidth(120);
 
     Button btnBuscar = new Button("Buscar");
     btnBuscar.getStyleClass().add("botao-secundario");
 
     hbBusca.getChildren().addAll(new Label("ID:"), txtIdBusca, btnBuscar);
 
-    // 📋 FORM
+    
     GridPane gridForm = new GridPane();
     gridForm.setAlignment(Pos.CENTER);
     gridForm.setHgap(10);
@@ -48,54 +45,58 @@ public class AnimalAtualizarView {
     gridForm.getStyleClass().add("form-grid");
 
     TextField txtNome = new TextField();
-    TextField txtIdade = new TextField();
-    TextField txtEspecie = new TextField();
     TextField txtRaca = new TextField();
+    TextField txtPorte = new TextField();
+    TextField txtPeso = new TextField();
+    TextField txtData = new TextField();
     TextField txtAbrigo = new TextField();
 
     gridForm.add(new Label("Nome:"), 0, 0);
     gridForm.add(txtNome, 1, 0);
 
-    gridForm.add(new Label("Idade:"), 0, 1);
-    gridForm.add(txtIdade, 1, 1);
+    gridForm.add(new Label("Raça:"), 0, 1);
+    gridForm.add(txtRaca, 1, 1);
 
-    gridForm.add(new Label("Espécie:"), 0, 2);
-    gridForm.add(txtEspecie, 1, 2);
+    gridForm.add(new Label("Porte:"), 0, 2);
+    gridForm.add(txtPorte, 1, 2);
 
-    gridForm.add(new Label("Raça:"), 0, 3);
-    gridForm.add(txtRaca, 1, 3);
+    gridForm.add(new Label("Peso:"), 0, 3);
+    gridForm.add(txtPeso, 1, 3);
 
-    gridForm.add(new Label("ID Abrigo:"), 0, 4);
-    gridForm.add(txtAbrigo, 1, 4);
+    gridForm.add(new Label("Data Adoção:"), 0, 4);
+    gridForm.add(txtData, 1, 4);
+
+    gridForm.add(new Label("ID Abrigo:"), 0, 5);
+    gridForm.add(txtAbrigo, 1, 5);
 
     gridForm.setDisable(true);
 
-    // 💾 SALVAR
+  
     Button btnSalvar = new Button("Salvar Alterações");
     btnSalvar.getStyleClass().add("botao-principal");
     btnSalvar.setDisable(true);
 
-    // 🔎 AÇÃO BUSCAR
+    
     btnBuscar.setOnAction(e -> {
       try {
-        int id = Integer.parseInt(txtIdBusca.getText().trim());
-        Animal a = controller.buscarAnimal(id);
+        int id = Integer.parseInt(txtIdBusca.getText());
+        Animal a = controller.buscar(id);
 
         if (a != null) {
           idAtual = a.getId();
 
           txtNome.setText(a.getNome());
-          txtIdade.setText(String.valueOf(a.getIdade()));
-          txtEspecie.setText(a.getEspecie());
           txtRaca.setText(a.getRaca());
+          txtPorte.setText(a.getPorte());
+          txtPeso.setText(String.valueOf(a.getPeso()));
+          txtData.setText(a.getDataAdocao());
           txtAbrigo.setText(String.valueOf(a.getIdAbrigo()));
 
           gridForm.setDisable(false);
           btnSalvar.setDisable(false);
+
         } else {
           mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Animal não encontrado!");
-          gridForm.setDisable(true);
-          btnSalvar.setDisable(true);
         }
 
       } catch (Exception ex) {
@@ -103,24 +104,28 @@ public class AnimalAtualizarView {
       }
     });
 
-    // 💾 AÇÃO SALVAR
+    
     btnSalvar.setOnAction(e -> {
       try {
-        boolean sucesso = controller.atualizarAnimal(
+
+        boolean sucesso = controller.atualizar(
             idAtual,
             txtNome.getText(),
-            Integer.parseInt(txtIdade.getText()),
-            txtEspecie.getText(),
             txtRaca.getText(),
+            txtPorte.getText(),
+            Float.parseFloat(txtPeso.getText()),
+            txtData.getText(),
             Integer.parseInt(txtAbrigo.getText())
         );
 
         if (sucesso) {
           mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Animal atualizado!");
+
           gridForm.setDisable(true);
           btnSalvar.setDisable(true);
           txtIdBusca.clear();
           idAtual = -1;
+
         } else {
           mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Falha ao atualizar.");
         }
@@ -134,11 +139,11 @@ public class AnimalAtualizarView {
     return layoutPrincipal;
   }
 
-  private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensagem) {
-    Alert alerta = new Alert(tipo);
-    alerta.setTitle(titulo);
-    alerta.setHeaderText(null);
-    alerta.setContentText(mensagem);
-    alerta.showAndWait();
+  private void mostrarAlerta(Alert.AlertType tipo, String titulo, String msg) {
+    Alert a = new Alert(tipo);
+    a.setTitle(titulo);
+    a.setHeaderText(null);
+    a.setContentText(msg);
+    a.showAndWait();
   }
 }

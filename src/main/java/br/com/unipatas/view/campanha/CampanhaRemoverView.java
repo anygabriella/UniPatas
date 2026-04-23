@@ -47,7 +47,13 @@ public class CampanhaRemoverView {
 
           Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
           confirm.setTitle("Confirmação");
-          confirm.setContentText("Deseja excluir: " + c.getNome() + " (ID: " + c.getId() + ")?");
+          confirm.setHeaderText(null);
+          confirm.setContentText(
+              "Deseja excluir a campanha:\n\n" +
+              c.getNome() +
+              "\n(Local: " + c.getLocal() +
+              ", Data: " + c.getData() + ")?"
+          );
 
           Optional<ButtonType> res = confirm.showAndWait();
 

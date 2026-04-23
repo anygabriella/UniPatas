@@ -10,7 +10,6 @@ public class CampanhaBuscaView {
 
   private CampanhaController controller;
 
-  // ✅ SEM throws
   public CampanhaBuscaView() {
     try {
       controller = new CampanhaController();
@@ -45,28 +44,46 @@ public class CampanhaBuscaView {
 
     Label lblId = new Label("-");
     Label lblNome = new Label("-");
-    Label lblDesc = new Label("-");
+    Label lblLocal = new Label("-");
+    Label lblData = new Label("-");
+    Label lblCusto = new Label("-");
 
     grid.add(new Label("ID:"), 0, 0);
     grid.add(lblId, 1, 0);
+
     grid.add(new Label("Nome:"), 0, 1);
     grid.add(lblNome, 1, 1);
-    grid.add(new Label("Descrição:"), 0, 2);
-    grid.add(lblDesc, 1, 2);
+
+    grid.add(new Label("Local:"), 0, 2);
+    grid.add(lblLocal, 1, 2);
+
+    grid.add(new Label("Data:"), 0, 3);
+    grid.add(lblData, 1, 3);
+
+    grid.add(new Label("Custo:"), 0, 4);
+    grid.add(lblCusto, 1, 4);
 
     btn.setOnAction(e -> {
       try {
         int id = Integer.parseInt(txtId.getText().trim());
 
-        // ✅ método correto
         Campanha c = controller.buscar(id);
 
         if (c != null) {
           lblId.setText(String.valueOf(c.getId()));
           lblNome.setText(c.getNome());
-          lblDesc.setText(c.getDescricao());
+          lblLocal.setText(c.getLocal());
+          lblData.setText(c.getData());
+          lblCusto.setText(String.valueOf(c.getCusto()));
         } else {
           mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Campanha não encontrada!");
+
+          // limpar tela
+          lblId.setText("-");
+          lblNome.setText("-");
+          lblLocal.setText("-");
+          lblData.setText("-");
+          lblCusto.setText("-");
         }
 
       } catch (NumberFormatException ex) {

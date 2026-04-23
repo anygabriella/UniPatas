@@ -28,7 +28,18 @@ public class CampanhaGerenciamentoView {
         tabRemover.setContent(removerView.getConteudo());
         tabRemover.setClosable(false);
 
-        tabPane.getTabs().addAll(tabCadastro, tabBusca, tabAtualizar, tabRemover);
+        Tab tabRelacionamento = new Tab("Animais da Campanha");
+        tabRelacionamento.setContent(new AnimalCampanhaView().getConteudo());
+        tabRelacionamento.setClosable(false);
+
+        tabPane.getTabs().addAll(
+            tabCadastro,
+            tabBusca,
+            tabAtualizar,
+            tabRemover,
+            tabRelacionamento
+        );
+
         return tabPane;
     }
 }

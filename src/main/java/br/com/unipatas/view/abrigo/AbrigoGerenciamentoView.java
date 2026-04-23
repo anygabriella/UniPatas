@@ -1,41 +1,52 @@
 package br.com.unipatas.view.abrigo;
 
-import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.VBox;
-import javafx.geometry.Pos;
 
 public class AbrigoGerenciamentoView {
+
     public TabPane getPainelAbas() {
+
         TabPane tabPane = new TabPane();
 
-        // Aba 1: Cadastro
+   
         Tab tabCadastro = new Tab("Cadastrar Abrigo");
         AbrigoCadastroView cadastroView = new AbrigoCadastroView();
         tabCadastro.setContent(cadastroView.getConteudo());
         tabCadastro.setClosable(false);
 
-       // Aba 2: Busca
+     
         Tab tabBusca = new Tab("Pesquisar");
-        AbrigoBuscaView buscaView = new AbrigoBuscaView(); // Chama a view real
+        AbrigoBuscaView buscaView = new AbrigoBuscaView();
         tabBusca.setContent(buscaView.getConteudo());
         tabBusca.setClosable(false);
 
-        // Aba 3: Atualizar
+     
         Tab tabAtualizar = new Tab("Atualizar");
-        AbrigoAtualizarView atualizarView = new AbrigoAtualizarView(); // Chama a view real
+        AbrigoAtualizarView atualizarView = new AbrigoAtualizarView();
         tabAtualizar.setContent(atualizarView.getConteudo());
         tabAtualizar.setClosable(false);
 
-        // Aba 4: Remover
+       
+        Tab tabAnimais = new Tab("Animais do Abrigo");
+        tabAnimais.setContent(new AbrigoAnimaisView().getConteudo());
+        tabAnimais.setClosable(false);
+
+     
         Tab tabRemover = new Tab("Remover");
-        AbrigoRemoverView removerView = new AbrigoRemoverView(); // Chama a view real
+        AbrigoRemoverView removerView = new AbrigoRemoverView();
         tabRemover.setContent(removerView.getConteudo());
         tabRemover.setClosable(false);
 
-        tabPane.getTabs().addAll(tabCadastro, tabBusca, tabAtualizar, tabRemover);
+      
+        tabPane.getTabs().addAll(
+            tabCadastro,
+            tabBusca,
+            tabAtualizar,
+            tabAnimais,
+            tabRemover
+        );
+
         return tabPane;
     }
-
 }

@@ -44,7 +44,7 @@ public class AnimalRemoverView {
       try {
         int id = Integer.parseInt(txtIdDeletar.getText().trim());
 
-        Animal animal = controller.buscarAnimal(id);
+        Animal animal = controller.buscar(id);
 
         if (animal != null) {
 
@@ -58,7 +58,7 @@ public class AnimalRemoverView {
 
           if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
 
-            boolean sucesso = controller.deletarAnimal(id);
+            boolean sucesso = controller.deletar(id);
 
             if (sucesso) {
               mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Animal removido!");

@@ -6,30 +6,29 @@ public class Campanha {
 
     private int id;
     private String nome;
-    private String descricao;
-    private String dataInicio;
-    private String dataFim;
+    private String local;
+    private String data;
+    private double custo;
 
     public Campanha() {
         this.nome = "";
-        this.descricao = "";
-        this.dataInicio = "";
-        this.dataFim = "";
+        this.local = "";
+        this.data = "";
     }
 
-    public Campanha(String nome, String descricao, String dataInicio, String dataFim) {
+    public Campanha(String nome, String local, String data, double custo) {
         this.nome = nome;
-        this.descricao = descricao;
-        this.dataInicio = dataInicio;
-        this.dataFim = dataFim;
+        this.local = local;
+        this.data = data;
+        this.custo = custo;
     }
 
-    public Campanha(int id, String nome, String descricao, String dataInicio, String dataFim) {
+    public Campanha(int id, String nome, String local, String data, double custo) {
         this.id = id;
         this.nome = nome;
-        this.descricao = descricao;
-        this.dataInicio = dataInicio;
-        this.dataFim = dataFim;
+        this.local = local;
+        this.data = data;
+        this.custo = custo;
     }
 
     // GETTERS E SETTERS
@@ -37,19 +36,21 @@ public class Campanha {
     public void setId(int id) { this.id = id; }
 
     public String getNome() { return nome; }
-    public String getDescricao() { return descricao; }
-    public String getDataInicio() { return dataInicio; }
-    public String getDataFim() { return dataFim; }
+    public String getLocal() { return local; }
+    public String getData() { return data; }
+    public double getCusto() { return custo; }
 
     public void setNome(String nome) { this.nome = nome; }
-    public void setDescricao(String descricao) { this.descricao = descricao; }
-    public void setDataInicio(String dataInicio) { this.dataInicio = dataInicio; }
-    public void setDataFim(String dataFim) { this.dataFim = dataFim; }
+    public void setLocal(String local) { this.local = local; }
+    public void setData(String data) { this.data = data; }
+    public void setCusto(double custo) { this.custo = custo; }
 
     public String mostrar() {
-        return "ID: " + id + " | Nome: " + nome +
-               " | Início: " + dataInicio + " | Fim: " + dataFim +
-               " | Descrição: " + descricao;
+        return "ID: " + id + 
+               " | Nome: " + nome +
+               " | Local: " + local +
+               " | Data: " + data +
+               " | Custo: " + custo;
     }
 
     // SERIALIZAÇÃO
@@ -59,9 +60,9 @@ public class Campanha {
 
         dos.writeInt(id);
         dos.writeUTF(nome);
-        dos.writeUTF(descricao);
-        dos.writeUTF(dataInicio);
-        dos.writeUTF(dataFim);
+        dos.writeUTF(local);
+        dos.writeUTF(data);
+        dos.writeDouble(custo);
 
         return ba.toByteArray();
     }
@@ -71,8 +72,8 @@ public class Campanha {
 
         id = dis.readInt();
         nome = dis.readUTF();
-        descricao = dis.readUTF();
-        dataInicio = dis.readUTF();
-        dataFim = dis.readUTF();
+        local = dis.readUTF();
+        data = dis.readUTF();
+        custo = dis.readDouble();
     }
 }

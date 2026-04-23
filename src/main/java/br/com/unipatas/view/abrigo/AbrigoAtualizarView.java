@@ -25,7 +25,7 @@ public class AbrigoAtualizarView {
     layout.setAlignment(Pos.CENTER);
     layout.setPadding(new Insets(25));
 
-    // 🔍 BUSCA
+  
     HBox hb = new HBox(10);
     hb.setAlignment(Pos.CENTER);
 
@@ -38,7 +38,7 @@ public class AbrigoAtualizarView {
 
     hb.getChildren().addAll(new Label("ID:"), txtId, btnBuscar);
 
-    // 📝 FORMULÁRIO
+  
     GridPane grid = new GridPane();
     grid.setAlignment(Pos.CENTER);
     grid.setHgap(10);
@@ -46,24 +46,31 @@ public class AbrigoAtualizarView {
     grid.getStyleClass().add("form-grid");
 
     TextField txtNome = new TextField();
-    TextField txtCidade = new TextField();
+    TextField txtEndereco = new TextField();
     TextField txtTelefone = new TextField();
+    TextField txtCusto = new TextField();
+    txtCusto.setPromptText("Ex: 1500.00");
 
     grid.add(new Label("Nome:"), 0, 0);
     grid.add(txtNome, 1, 0);
-    grid.add(new Label("Cidade:"), 0, 1);
-    grid.add(txtCidade, 1, 1);
+
+    grid.add(new Label("Endereço:"), 0, 1);
+    grid.add(txtEndereco, 1, 1);
+
     grid.add(new Label("Telefone:"), 0, 2);
     grid.add(txtTelefone, 1, 2);
 
+    grid.add(new Label("Custo Mensal:"), 0, 3);
+    grid.add(txtCusto, 1, 3);
+
     grid.setDisable(true);
 
-    // 💾 BOTÃO SALVAR
+
     Button btnSalvar = new Button("Salvar Alterações");
     btnSalvar.getStyleClass().add("botao-principal");
     btnSalvar.setDisable(true);
 
-    // 🔎 AÇÃO BUSCAR
+ 
     btnBuscar.setOnAction(e -> {
       try {
         int id = Integer.parseInt(txtId.getText().trim());
@@ -71,12 +78,15 @@ public class AbrigoAtualizarView {
 
         if (a != null) {
           idAtual = a.getId();
+
           txtNome.setText(a.getNome());
-          txtCidade.setText(a.getCidade());
+          txtEndereco.setText(a.getendereco());
           txtTelefone.setText(a.getTelefone());
+          txtCusto.setText(String.valueOf(a.getCustoMensal()));
 
           grid.setDisable(false);
           btnSalvar.setDisable(false);
+
         } else {
           mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Abrigo não encontrado!");
           grid.setDisable(true);
@@ -90,14 +100,18 @@ public class AbrigoAtualizarView {
       }
     });
 
-    // 💾 AÇÃO SALVAR
+
     btnSalvar.setOnAction(e -> {
       try {
+
+        double custo = Double.parseDouble(txtCusto.getText().trim());
+
         boolean sucesso = controller.atualizar(
             idAtual,
             txtNome.getText(),
-            txtCidade.getText(),
-            txtTelefone.getText()
+            txtEndereco.getText(),
+            txtTelefone.getText(),
+            custo
         );
 
         if (sucesso) {
@@ -112,6 +126,8 @@ public class AbrigoAtualizarView {
           mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Não foi possível atualizar.");
         }
 
+      } catch (NumberFormatException ex) {
+        mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Custo mensal inválido.");
       } catch (Exception ex) {
         mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Falha ao salvar: " + ex.getMessage());
       }

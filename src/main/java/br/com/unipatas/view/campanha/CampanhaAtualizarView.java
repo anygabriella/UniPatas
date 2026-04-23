@@ -44,21 +44,21 @@ public class CampanhaAtualizarView {
     grid.setVgap(10);
 
     TextField txtNome = new TextField();
-    TextField txtDesc = new TextField();
-    TextField txtInicio = new TextField();
-    TextField txtFim = new TextField();
+    TextField txtLocal = new TextField();
+    TextField txtData = new TextField();
+    TextField txtCusto = new TextField();
 
     grid.add(new Label("Nome:"), 0, 0);
     grid.add(txtNome, 1, 0);
 
-    grid.add(new Label("Descrição:"), 0, 1);
-    grid.add(txtDesc, 1, 1);
+    grid.add(new Label("Local:"), 0, 1);
+    grid.add(txtLocal, 1, 1);
 
-    grid.add(new Label("Data Início:"), 0, 2);
-    grid.add(txtInicio, 1, 2);
+    grid.add(new Label("Data:"), 0, 2);
+    grid.add(txtData, 1, 2);
 
-    grid.add(new Label("Data Fim:"), 0, 3);
-    grid.add(txtFim, 1, 3);
+    grid.add(new Label("Custo:"), 0, 3);
+    grid.add(txtCusto, 1, 3);
 
     grid.setDisable(true);
 
@@ -75,10 +75,11 @@ public class CampanhaAtualizarView {
 
         if (c != null) {
           idAtual = c.getId();
+
           txtNome.setText(c.getNome());
-          txtDesc.setText(c.getDescricao());
-          txtInicio.setText(c.getDataInicio());
-          txtFim.setText(c.getDataFim());
+          txtLocal.setText(c.getLocal());
+          txtData.setText(c.getData());
+          txtCusto.setText(String.valueOf(c.getCusto()));
 
           grid.setDisable(false);
           btnSalvar.setDisable(false);
@@ -99,9 +100,9 @@ public class CampanhaAtualizarView {
         boolean sucesso = controller.atualizar(
             idAtual,
             txtNome.getText(),
-            txtDesc.getText(),
-            txtInicio.getText(),
-            txtFim.getText()
+            txtLocal.getText(),
+            txtData.getText(),
+            Double.parseDouble(txtCusto.getText())
         );
 
         if (sucesso) {
@@ -114,6 +115,8 @@ public class CampanhaAtualizarView {
           mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Falha ao atualizar.");
         }
 
+      } catch (NumberFormatException ex) {
+        mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Custo deve ser numérico.");
       } catch (Exception ex) {
         mostrarAlerta(Alert.AlertType.ERROR, "Erro", ex.getMessage());
       }

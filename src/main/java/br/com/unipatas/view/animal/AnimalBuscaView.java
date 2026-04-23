@@ -2,8 +2,10 @@ package br.com.unipatas.view.animal;
 
 import br.com.unipatas.controller.AnimalController;
 import br.com.unipatas.model.Animal;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -27,7 +29,7 @@ public class AnimalBuscaView {
     layoutPrincipal.setAlignment(Pos.CENTER);
     layoutPrincipal.setPadding(new Insets(25));
 
-    // 🔎 ÁREA DE BUSCA
+    // 🔎 BUSCA
     HBox hbBusca = new HBox(10);
     hbBusca.setAlignment(Pos.CENTER);
 
@@ -49,9 +51,10 @@ public class AnimalBuscaView {
 
     Label lblId = new Label("-");
     Label lblNome = new Label("-");
-    Label lblIdade = new Label("-");
-    Label lblEspecie = new Label("-");
     Label lblRaca = new Label("-");
+    Label lblPorte = new Label("-");
+    Label lblPeso = new Label("-");
+    Label lblData = new Label("-");
     Label lblAbrigo = new Label("-");
 
     gridResultados.add(new Label("ID:"), 0, 0);
@@ -60,40 +63,46 @@ public class AnimalBuscaView {
     gridResultados.add(new Label("Nome:"), 0, 1);
     gridResultados.add(lblNome, 1, 1);
 
-    gridResultados.add(new Label("Idade:"), 0, 2);
-    gridResultados.add(lblIdade, 1, 2);
+    gridResultados.add(new Label("Raça:"), 0, 2);
+    gridResultados.add(lblRaca, 1, 2);
 
-    gridResultados.add(new Label("Espécie:"), 0, 3);
-    gridResultados.add(lblEspecie, 1, 3);
+    gridResultados.add(new Label("Porte:"), 0, 3);
+    gridResultados.add(lblPorte, 1, 3);
 
-    gridResultados.add(new Label("Raça:"), 0, 4);
-    gridResultados.add(lblRaca, 1, 4);
+    gridResultados.add(new Label("Peso:"), 0, 4);
+    gridResultados.add(lblPeso, 1, 4);
 
-    gridResultados.add(new Label("ID Abrigo:"), 0, 5);
-    gridResultados.add(lblAbrigo, 1, 5);
+    gridResultados.add(new Label("Data Adoção:"), 0, 5);
+    gridResultados.add(lblData, 1, 5);
 
-    // 🔥 AQUI ESTÁ A LÓGICA REAL (ANTES NÃO EXISTIA)
+    gridResultados.add(new Label("ID Abrigo:"), 0, 6);
+    gridResultados.add(lblAbrigo, 1, 6);
+
+    // 🔍 AÇÃO BUSCAR
     btnBuscar.setOnAction(e -> {
       try {
         int id = Integer.parseInt(txtIdBusca.getText().trim());
 
-        Animal a = controller.buscarAnimal(id);
+        Animal a = controller.buscar(id);
 
         if (a != null) {
           lblId.setText(String.valueOf(a.getId()));
           lblNome.setText(a.getNome());
-          lblIdade.setText(String.valueOf(a.getIdade()));
-          lblEspecie.setText(a.getEspecie());
           lblRaca.setText(a.getRaca());
+          lblPorte.setText(a.getPorte());
+          lblPeso.setText(String.valueOf(a.getPeso()));
+          lblData.setText(a.getDataAdocao());
           lblAbrigo.setText(String.valueOf(a.getIdAbrigo()));
         } else {
+
           mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Animal não encontrado!");
 
           lblId.setText("-");
           lblNome.setText("-");
-          lblIdade.setText("-");
-          lblEspecie.setText("-");
           lblRaca.setText("-");
+          lblPorte.setText("-");
+          lblPeso.setText("-");
+          lblData.setText("-");
           lblAbrigo.setText("-");
         }
 

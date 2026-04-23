@@ -11,29 +11,29 @@ public class CampanhaController {
         dao = new CampanhaDAO();
     }
 
-    // CREATE (PADRÃO)
-    public int cadastrar(String nome, String descricao, String dataInicio, String dataFim) throws Exception {
-        Campanha c = new Campanha(nome, descricao, dataInicio, dataFim);
+    
+    public int cadastrar(String nome, String local, String data, double custo) throws Exception {
+        Campanha c = new Campanha(nome, local, data, custo);
         return dao.create(c);
     }
 
-    // READ por ID (PADRÃO)
+    
     public Campanha buscar(int id) throws Exception {
         return dao.read(id);
     }
 
-    // UPDATE (PADRÃO IGUAL USUARIO/ANIMAL)
-    public boolean atualizar(int id, String nome, String descricao, String dataInicio, String dataFim) throws Exception {
+    
+    public boolean atualizar(int id, String nome, String local, String data, double custo) throws Exception {
 
         Campanha antiga = dao.read(id);
         if (antiga == null) return false;
 
-        Campanha nova = new Campanha(id, nome, descricao, dataInicio, dataFim);
+        Campanha nova = new Campanha(id, nome, local, data, custo);
 
         return dao.update(nova);
     }
 
-    // DELETE (PADRÃO)
+    
     public boolean remover(int id) throws Exception {
         return dao.delete(id);
     }

@@ -46,8 +46,8 @@ public class HashExtensivel {
         long pos = bucket.length();
         bucket.seek(pos);
 
-        bucket.writeInt(pl); // profundidade local
-        bucket.writeInt(0);  // quantidade
+        bucket.writeInt(pl); 
+        bucket.writeInt(0);  
 
         for (int i = 0; i < bucketSize; i++) {
             bucket.writeInt(-1);
@@ -172,13 +172,44 @@ public class HashExtensivel {
         long e = bucket.readLong();
 
         if (c == chave)
-            endereco = e; // 🔥 pega o MAIS RECENTE
+            endereco = e; 
     }
 
     return endereco;
 }
 
-    public void delete(int chave) throws Exception {
-        // implementação opcional para trabalho acadêmico
+public void delete(int chave) throws Exception {
+
+    int h = hash(chave);
+
+    dir.seek(4 + h * 8);
+    long posBucket = dir.readLong();
+
+    bucket.seek(posBucket);
+    int pl = bucket.readInt();
+    int qtd = bucket.readInt();
+
+    List<long[]> dados = new ArrayList<>();
+
+    // lê todos os dados MENOS o que será removido
+    for (int i = 0; i < qtd; i++) {
+        int c = bucket.readInt();
+        long e = bucket.readLong();
+
+        if (c != chave) {
+            dados.add(new long[]{c, e});
+        }
     }
+
+    // limpa bucket
+    bucket.seek(posBucket);
+    bucket.writeInt(pl);
+    bucket.writeInt(0);
+
+    // reinsere sem o elemento removido
+    for (long[] d : dados) {
+        create((int)d[0], d[1]);
+    }
+}
+
 }

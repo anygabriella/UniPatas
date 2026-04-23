@@ -8,16 +8,16 @@ public class UsuarioController {
   private UsuarioDAO usuarioDAO;
 
   public UsuarioController() throws Exception {
-    // Inicializa o acesso ao arquivo binário
+    
     this.usuarioDAO = new UsuarioDAO();
   }
 
-  // Recebe os dados da View e repassa para o Model
+  
   public int salvarUsuario(String nome, String cpf, String email, String senha, String telefone, String cidade,
       String estado) throws Exception {
     Usuario novoUsuario = new Usuario(nome, cpf, email, senha, telefone, cidade, estado);
 
-    // Retorna o ID gerado pelo seu arquivo RandomAccessFile
+    
     return usuarioDAO.create(novoUsuario);
   }
 

@@ -12,30 +12,34 @@ public class AnimalController {
         dao = new AnimalDAO();
     }
 
-    // CREATE
-    public int salvarAnimal(String nome, int idade, String especie, String raca, int idAbrigo) throws Exception {
-        Animal a = new Animal(nome, idade, especie, raca, idAbrigo);
+
+    public int salvar(String nome, String raca, String porte,
+                      float peso, String dataAdocao, int idAbrigo) throws Exception {
+
+        Animal a = new Animal(nome, raca, porte, peso, dataAdocao, idAbrigo);
         return dao.create(a);
     }
 
-    // READ por ID
-    public Animal buscarAnimal(int id) throws Exception {
+
+    public Animal buscar(int id) throws Exception {
         return dao.read(id);
     }
 
-    // READ por abrigo (1:N)
-    public List<Animal> listarAnimaisPorAbrigo(int idAbrigo) throws Exception {
+
+    public List<Animal> listarPorAbrigo(int idAbrigo) throws Exception {
         return dao.readByAbrigo(idAbrigo);
     }
 
-    // UPDATE 🔥 (ESSENCIAL)
-    public boolean atualizarAnimal(int id, String nome, int idade, String especie, String raca, int idAbrigo) throws Exception {
-        Animal a = new Animal(id, nome, idade, especie, raca, idAbrigo);
+
+    public boolean atualizar(int id, String nome, String raca, String porte,
+                              float peso, String dataAdocao, int idAbrigo) throws Exception {
+
+        Animal a = new Animal(id, nome, raca, porte, peso, dataAdocao, idAbrigo);
         return dao.update(a);
     }
 
     // DELETE
-    public boolean deletarAnimal(int id) throws Exception {
+    public boolean deletar(int id) throws Exception {
         return dao.delete(id);
     }
 }

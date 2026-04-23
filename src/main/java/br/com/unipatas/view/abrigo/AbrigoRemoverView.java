@@ -29,32 +29,51 @@ public class AbrigoRemoverView {
     hb.setAlignment(Pos.CENTER);
 
     TextField txtId = new TextField();
-    Button btn = new Button("Excluir");
+    txtId.setPromptText("ID do abrigo");
+    txtId.setPrefWidth(120);
+
+    Button btn = new Button("Excluir Abrigo");
     btn.getStyleClass().add("botao-perigo");
 
     hb.getChildren().addAll(new Label("ID:"), txtId, btn);
 
     btn.setOnAction(e -> {
       try {
-        int id = Integer.parseInt(txtId.getText());
+        int id = Integer.parseInt(txtId.getText().trim());
 
         Abrigo a = controller.buscar(id);
 
         if (a != null) {
 
           Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-          confirm.setContentText("Excluir " + a.getNome() + "?");
+          confirm.setTitle("Confirmação de Exclusão");
+          confirm.setHeaderText(null);
+          confirm.setContentText(
+              "Deseja excluir o abrigo: " + a.getNome() + " (ID: " + a.getId() + ")?"
+          );
 
           Optional<ButtonType> res = confirm.showAndWait();
 
           if (res.isPresent() && res.get() == ButtonType.OK) {
-            controller.remover(id);
-            mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Removido!");
+
+            boolean sucesso = controller.remover(id);
+
+            if (sucesso) {
+              mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Abrigo removido!");
+              txtId.clear();
+            } else {
+              mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Não foi possível remover.");
+            }
           }
+
+        } else {
+          mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Abrigo não encontrado!");
         }
 
+      } catch (NumberFormatException ex) {
+        mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Digite um ID numérico válido.");
       } catch (Exception ex) {
-        mostrarAlerta(Alert.AlertType.ERROR, "Erro", ex.getMessage());
+        mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao excluir: " + ex.getMessage());
       }
     });
 
