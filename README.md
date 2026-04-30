@@ -34,27 +34,27 @@ Antes de começar, você precisará ter instalado em sua máquina:
 
 ### 🐧 Linux (Ubuntu/Debian ou WSL)
 
-# Atualizar repositórios e instalar dependências:
+Atualizar repositórios e instalar dependências:
 sudo apt update
 sudo apt install openjdk-21-jdk maven
-# Entrar na pasta do projeto:
+Entrar na pasta do projeto:
 cd caminho/para/UniPatas
-# Executar a aplicação:
+Executar a aplicação:
 mvn org.openjfx:javafx-maven-plugin:0.0.8:run -Djavafx.mainClass="br.com.unipatas.Launcher"
 
 ### 🪟 Windows (PowerShell)
-# Verificar se Java e Maven estão instalados:
+Verificar se Java e Maven estão instalados:
 java -version
 mvn -version
-# Executar a aplicação:
+Executar a aplicação:
 mvn org.openjfx:javafx-maven-plugin:0.0.8:run "-Djavafx.mainClass=br.com.unipatas.Launcher"
 
 ### 🍎 macOS (Terminal)
-# Instalar dependências com Homebrew:
+Instalar dependências com Homebrew:
 brew install openjdk@21 maven
-# Entrar na pasta do projeto:
+Entrar na pasta do projeto:
 cd caminho/para/UniPatas
-# Executar a aplicação:
+Executar a aplicação:
 mvn org.openjfx:javafx-maven-plugin:0.0.8:run -Djavafx.mainClass="br.com.unipatas.Launcher"
 
 ## 👩‍💻 Desenvolvedores
