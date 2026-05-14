@@ -9,6 +9,7 @@ public class AnimalDAO {
 
     private RandomAccessFile arq;
     private HashExtensivel indicePK;
+    private AnimalIndiceDAO indiceArvore;
 
     public AnimalDAO() throws Exception {
 
@@ -22,6 +23,7 @@ public class AnimalDAO {
         }
 
         indicePK = new HashExtensivel("AnimalPK");
+        indiceArvore = new AnimalIndiceDAO();
     }
 
  
@@ -46,7 +48,7 @@ public class AnimalDAO {
         arq.write(ba);
 
         indicePK.create(a.getId(), pos);
-
+        indiceArvore.create(a); 
         return a.getId();
     }
 
@@ -55,7 +57,6 @@ public class AnimalDAO {
 
         long pos = indicePK.read(id);
         if (pos == -1) return null;
-
         arq.seek(pos);
 
         byte lapide = arq.readByte();
@@ -106,6 +107,8 @@ public class AnimalDAO {
         long pos = indicePK.read(novo.getId());
         if (pos == -1) return false;
 
+        Animal antigo = read(novo.getId());
+
         arq.seek(pos);
         byte lapide = arq.readByte();
         if (lapide == 1) return false;
@@ -128,6 +131,9 @@ public class AnimalDAO {
         indicePK.delete(novo.getId());
         indicePK.create(novo.getId(), novaPos);
 
+        indiceArvore.delete(antigo);
+        indiceArvore.create(novo);
+
         return true;
     }
 
@@ -137,6 +143,7 @@ public class AnimalDAO {
         long pos = indicePK.read(id);
         if (pos == -1) return false;
 
+        Animal a = read(id);
         arq.seek(pos);
         byte lapide = arq.readByte();
         if (lapide == 1) return false;
@@ -145,7 +152,7 @@ public class AnimalDAO {
         arq.writeByte(1);
 
         indicePK.delete(id);
-
+        indiceArvore.delete(a);
         return true;
     }
 }

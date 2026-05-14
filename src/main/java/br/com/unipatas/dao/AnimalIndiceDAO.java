@@ -1,84 +1,57 @@
 package br.com.unipatas.dao;
 
 import java.io.*;
-import br.com.unipatas.model.AnimalIndice;
+import java.util.*;
+import br.com.unipatas.model.Animal;
+import br.com.unipatas.index.ParStringInt;
+import br.com.unipatas.index.arvore.ArvoreBMais;
 
 public class AnimalIndiceDAO {
 
-    private RandomAccessFile arq;
+    private ArvoreBMais<ParStringInt> indiceRaca;
+    private ArvoreBMais<ParStringInt> indicePorte;
 
     public AnimalIndiceDAO() throws Exception {
         File pasta = new File("data");
         if (!pasta.exists()) pasta.mkdir();
 
-        arq = new RandomAccessFile("data/Animal.idx", "rw");
+        indiceRaca  = new ArvoreBMais<>(
+            ParStringInt.class.getConstructor(),
+            5,
+            "data/AnimalRaca.db"
+        );
+        indicePorte = new ArvoreBMais<>(
+            ParStringInt.class.getConstructor(),
+            5,
+            "data/AnimalPorte.db"
+        );
     }
 
-    // CREATE
-    public void create(int id, long pos) throws Exception {
-        arq.seek(arq.length());
-
-        AnimalIndice idx = new AnimalIndice(id, pos);
-        byte[] ba = idx.toBytes();
-
-        arq.writeByte(0);
-        arq.writeShort(ba.length);
-        arq.write(ba);
+    // CREATE — chama ao inserir um Animal
+    public void create(Animal a) throws Exception {
+        indiceRaca.create(new ParStringInt(a.getRaca(),  a.getId()));
+        indicePorte.create(new ParStringInt(a.getPorte(), a.getId()));
     }
 
-    // READ
-    public long read(int id) throws Exception {
-        arq.seek(0);
-
-        while (arq.getFilePointer() < arq.length()) {
-            byte lapide = arq.readByte();
-            short tam = arq.readShort();
-
-            if (lapide == 0) {
-                byte[] ba = new byte[tam];
-                arq.readFully(ba);
-
-                AnimalIndice idx = new AnimalIndice();
-                idx.fromBytes(ba);
-
-                if (idx.getId() == id) {
-                    return idx.getPosicao();
-                }
-            } else {
-                arq.skipBytes(tam);
-            }
-        }
-
-        return -1;
+    // READ por raça — retorna lista de IDs
+    public List<Integer> readByRaca(String raca) throws Exception {
+        List<Integer> ids = new ArrayList<>();
+        List<ParStringInt> resultado = indiceRaca.read(new ParStringInt(raca));
+        for (ParStringInt p : resultado) ids.add(p.getId());
+        return ids;
     }
 
-    // DELETE
-    public boolean delete(int id) throws Exception {
-        arq.seek(0);
+    // READ por porte — retorna lista de IDs
+    public List<Integer> readByPorte(String porte) throws Exception {
+        List<Integer> ids = new ArrayList<>();
+        List<ParStringInt> resultado = indicePorte.read(new ParStringInt(porte));
+        for (ParStringInt p : resultado) ids.add(p.getId());
+        return ids;
+    }
 
-        while (arq.getFilePointer() < arq.length()) {
-            long pos = arq.getFilePointer();
-
-            byte lapide = arq.readByte();
-            short tam = arq.readShort();
-
-            if (lapide == 0) {
-                byte[] ba = new byte[tam];
-                arq.readFully(ba);
-
-                AnimalIndice idx = new AnimalIndice();
-                idx.fromBytes(ba);
-
-                if (idx.getId() == id) {
-                    arq.seek(pos);
-                    arq.writeByte(1);
-                    return true;
-                }
-            } else {
-                arq.skipBytes(tam);
-            }
-        }
-
-        return false;
+    // DELETE — chama ao excluir um Animal
+    public void delete(Animal a) throws Exception {
+        indiceRaca.delete(new ParStringInt(a.getRaca(),  a.getId()));
+        indicePorte.delete(new ParStringInt(a.getPorte(), a.getId()));
     }
 }
