@@ -1,6 +1,9 @@
 package br.com.unipatas.dao;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
 import br.com.unipatas.model.Campanha;
 import br.com.unipatas.index.HashExtensivel;
 
@@ -130,5 +133,28 @@ public class CampanhaDAO {
         indicePK.delete(id);
 
         return true;
+    }
+
+    public List<Campanha> readAll() throws Exception {
+        List<Campanha> lista = new ArrayList<>();
+        
+        arq.seek(4); // Pula o cabeçalho (último ID gerado)
+
+        while (arq.getFilePointer() < arq.length()) {
+            byte lapide = arq.readByte();
+            short tam = arq.readShort();
+
+            byte[] ba = new byte[tam];
+            arq.readFully(ba);
+
+            // Só adiciona na lista se não estiver excluído
+            if (lapide == 0) {
+                Campanha c = new Campanha();
+                c.fromBytes(ba);
+                lista.add(c);
+            }
+        }
+
+        return lista;
     }
 }

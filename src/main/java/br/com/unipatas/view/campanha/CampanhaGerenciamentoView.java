@@ -29,7 +29,7 @@ public class CampanhaGerenciamentoView {
         tabRemover.setClosable(false);
 
         Tab tabRelacionamento = new Tab("Animais da Campanha");
-        tabRelacionamento.setContent(new AnimalCampanhaView().getConteudo());
+        tabRelacionamento.setContent(new AnimalCampanhaView());
         tabRelacionamento.setClosable(false);
 
         tabPane.getTabs().addAll(

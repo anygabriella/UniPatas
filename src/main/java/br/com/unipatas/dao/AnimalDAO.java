@@ -155,4 +155,26 @@ public class AnimalDAO {
         indiceArvore.delete(a);
         return true;
     }
+    public List<Animal> readAll() throws Exception {
+        List<Animal> lista = new ArrayList<>();
+        
+        arq.seek(4); // Pula o cabeçalho (último ID gerado)
+
+        while (arq.getFilePointer() < arq.length()) {
+            byte lapide = arq.readByte();
+            short tam = arq.readShort();
+
+            byte[] ba = new byte[tam];
+            arq.readFully(ba);
+
+            // Só adiciona na lista se não estiver excluído
+            if (lapide == 0) {
+                Animal a = new Animal();
+                a.fromBytes(ba);
+                lista.add(a);
+            }
+        }
+
+        return lista;
+    }
 }

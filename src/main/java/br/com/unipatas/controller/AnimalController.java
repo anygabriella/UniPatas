@@ -12,27 +12,23 @@ public class AnimalController {
         dao = new AnimalDAO();
     }
 
-
     public int salvar(String nome, String raca, String porte,
-                      float peso, String dataAdocao, int idAbrigo) throws Exception {
+            float peso, String dataAdocao, int idAbrigo) throws Exception {
 
         Animal a = new Animal(nome, raca, porte, peso, dataAdocao, idAbrigo);
         return dao.create(a);
     }
 
-
     public Animal buscar(int id) throws Exception {
         return dao.read(id);
     }
-
 
     public List<Animal> listarPorAbrigo(int idAbrigo) throws Exception {
         return dao.readByAbrigo(idAbrigo);
     }
 
-
     public boolean atualizar(int id, String nome, String raca, String porte,
-                              float peso, String dataAdocao, int idAbrigo) throws Exception {
+            float peso, String dataAdocao, int idAbrigo) throws Exception {
 
         Animal a = new Animal(id, nome, raca, porte, peso, dataAdocao, idAbrigo);
         return dao.update(a);
@@ -41,5 +37,9 @@ public class AnimalController {
     // DELETE
     public boolean deletar(int id) throws Exception {
         return dao.delete(id);
+    }
+
+    public List<Animal> listarTodos() throws Exception {
+        return dao.readAll();
     }
 }

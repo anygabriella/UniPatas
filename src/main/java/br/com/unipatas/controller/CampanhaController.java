@@ -1,5 +1,7 @@
 package br.com.unipatas.controller;
 
+import java.util.List;
+
 import br.com.unipatas.dao.CampanhaDAO;
 import br.com.unipatas.model.Campanha;
 
@@ -36,5 +38,9 @@ public class CampanhaController {
     
     public boolean remover(int id) throws Exception {
         return dao.delete(id);
+    }
+    
+    public List<Campanha> listarTodos() throws Exception {
+        return dao.readAll();
     }
 }
