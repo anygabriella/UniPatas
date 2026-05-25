@@ -2,6 +2,7 @@ package br.com.unipatas.controller;
 
 import br.com.unipatas.dao.AbrigoDAO;
 import br.com.unipatas.model.Abrigo;
+import java.util.List;
 
 public class AbrigoController {
 
@@ -36,4 +37,8 @@ public class AbrigoController {
     public boolean remover(int id) throws Exception {
         return dao.delete(id);
     }
+
+    public List<Abrigo> listarTodos() throws Exception {
+        return dao.readAll();
+}
 }

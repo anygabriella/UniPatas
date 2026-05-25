@@ -296,25 +296,59 @@
   -fx-border-color: transparent transparent #f3f4f6 transparent;
   -fx-padding: 2px 0;
   -fx-font-size: 13px;
-  -fx-text-fill: #2d2d2d;
 }
 
 .table-view .table-row-cell:odd {
   -fx-background-color: #fafafa;
 }
 
-.table-view .table-row-cell:selected {
-  -fx-background-color: #fff3e0;
-  -fx-text-fill: #2d2d2d;
-}
-
+/* Hover normal */
 .table-view .table-row-cell:hover {
   -fx-background-color: #fff8f0;
 }
 
+/* Linha selecionada */
+.table-view .table-row-cell:selected,
+.table-view:focused .table-row-cell:selected,
+.table-view .table-row-cell:focused:selected,
+.table-view .table-row-cell:selected:hover,
+.table-view:focused .table-row-cell:selected:hover,
+.table-view .table-row-cell:focused:selected:hover {
+  -fx-background-color: #16213e;
+}
+
+/* Texto da linha selecionada */
+.table-view .table-row-cell:selected .table-cell,
+.table-view:focused .table-row-cell:selected .table-cell,
+.table-view .table-row-cell:focused:selected .table-cell,
+.table-view .table-row-cell:selected:hover .table-cell,
+.table-view:focused .table-row-cell:selected:hover .table-cell,
+.table-view .table-row-cell:focused:selected:hover .table-cell {
+  -fx-text-fill: white;
+}
+
+/* Células normais */
 .table-view .table-cell {
   -fx-padding: 10px 14px;
   -fx-border-color: transparent;
+  -fx-text-fill: #2d2d2d;
+}
+
+/* Remove bug visual de foco azul/claro do JavaFX */
+.table-view .table-row-cell:filled:selected {
+  -fx-background-color: #16213e;
+}
+
+.table-view .table-row-cell:filled:selected .table-cell {
+  -fx-text-fill: white;
+}
+
+.table-view .table-row-cell:filled:selected:hover {
+  -fx-background-color: #16213e;
+}
+
+.table-view .table-row-cell:filled:selected:hover .table-cell {
+  -fx-text-fill: white;
 }
 
 .table-view .scroll-bar:vertical {
@@ -330,7 +364,6 @@
 .table-view .scroll-bar:vertical .thumb:hover {
   -fx-background-color: #f77f00;
 }
-
 /* ══════════════════════════════════════════════
    SCROLLBAR GLOBAL
    ══════════════════════════════════════════════ */
@@ -430,4 +463,165 @@
   -fx-font-weight: bold;
   -fx-background-radius: 20px;
   -fx-padding: 3px 10px;
+}
+
+
+/* ══════════════════════════════════════════════
+   CAMPANHAS — CARDS E DETALHES
+   Adicionar ao final do CSS antigo
+   ══════════════════════════════════════════════ */
+
+.tela-campanhas {
+  -fx-background-color: #fafafa;
+}
+
+.titulo-pagina {
+  -fx-font-size: 24px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #1f2937;
+}
+
+.subtitulo-pagina {
+  -fx-font-size: 13px;
+  -fx-text-fill: #6b7280;
+}
+
+.scroll-cards {
+  -fx-background-color: transparent;
+  -fx-background: transparent;
+  -fx-border-color: transparent;
+}
+
+.scroll-cards .viewport {
+  -fx-background-color: transparent;
+}
+
+/* Card individual da campanha */
+.campanha-card {
+  -fx-background-color: white;
+  -fx-background-radius: 18px;
+  -fx-border-color: #e5e7eb;
+  -fx-border-radius: 18px;
+  -fx-border-width: 1px;
+  -fx-padding: 18px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.07), 14, 0, 0, 4);
+}
+
+.campanha-card:hover {
+  -fx-border-color: #f77f00;
+  -fx-effect: dropshadow(gaussian, rgba(247, 127, 0, 0.22), 18, 0, 0, 5);
+  -fx-translate-y: -2px;
+}
+
+.campanha-badge {
+  -fx-background-color: #fff3e0;
+  -fx-text-fill: #f77f00;
+  -fx-font-size: 11px;
+  -fx-font-weight: bold;
+  -fx-padding: 4px 10px;
+  -fx-background-radius: 20px;
+}
+
+.campanha-card-titulo {
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #1f2937;
+}
+
+.campanha-card-info {
+  -fx-font-size: 12px;
+  -fx-text-fill: #6b7280;
+}
+
+/* Botão pequeno usado dentro do card */
+.botao-secundario-pequeno {
+  -fx-background-color: transparent;
+  -fx-text-fill: #f77f00;
+  -fx-font-size: 12px;
+  -fx-font-weight: bold;
+  -fx-padding: 7px 14px;
+  -fx-background-radius: 8px;
+  -fx-border-radius: 8px;
+  -fx-border-color: #f77f00;
+  -fx-border-width: 1px;
+  -fx-cursor: hand;
+}
+
+.botao-secundario-pequeno:hover {
+  -fx-background-color: #fff3e0;
+}
+
+.botao-secundario-pequeno:pressed {
+  -fx-background-color: #ffe0b2;
+}
+
+/* Estado vazio: quando não existe nenhuma campanha */
+.estado-vazio {
+  -fx-background-color: white;
+  -fx-background-radius: 20px;
+  -fx-border-color: #e5e7eb;
+  -fx-border-radius: 20px;
+  -fx-border-width: 1px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 14, 0, 0, 4);
+}
+
+.estado-vazio-icone {
+  -fx-font-size: 46px;
+}
+
+.estado-vazio-titulo {
+  -fx-font-size: 20px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #1f2937;
+}
+
+.estado-vazio-texto {
+  -fx-font-size: 13px;
+  -fx-text-fill: #6b7280;
+}
+
+/* Tela de detalhes da campanha */
+.campanha-detalhes-card {
+  -fx-background-color: white;
+  -fx-background-radius: 18px;
+  -fx-border-color: #e5e7eb;
+  -fx-border-radius: 18px;
+  -fx-border-width: 1px;
+  -fx-padding: 20px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 12, 0, 0, 3);
+}
+
+.campanha-detalhes-titulo {
+  -fx-font-size: 22px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #1f2937;
+}
+
+.campanha-detalhes-info {
+  -fx-font-size: 13px;
+  -fx-text-fill: #4b5563;
+}
+
+/* ListView dos animais vinculados */
+.list-view {
+  -fx-background-color: #f9fafb;
+  -fx-border-color: #e5e7eb;
+  -fx-border-radius: 12px;
+  -fx-background-radius: 12px;
+}
+
+.list-view .list-cell {
+  -fx-background-color: transparent;
+  -fx-padding: 10px 12px;
+  -fx-text-fill: #374151;
+  -fx-font-size: 13px;
+}
+
+.list-view .list-cell:hover {
+  -fx-background-color: #fff3e0;
+}
+
+.list-view .list-cell:selected {
+  -fx-background-color: #fff3e0;
+  -fx-text-fill: #1f2937;
 }

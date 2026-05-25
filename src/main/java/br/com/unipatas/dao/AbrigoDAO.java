@@ -1,6 +1,8 @@
 package br.com.unipatas.dao;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import br.com.unipatas.model.Abrigo;
 import br.com.unipatas.index.HashExtensivel;
 
@@ -133,4 +135,26 @@ public class AbrigoDAO {
 
         return true;
     }
+
+    public List<Abrigo> readAll() throws Exception {
+    List<Abrigo> lista = new ArrayList<>();
+
+    arq.seek(4);
+
+    while (arq.getFilePointer() < arq.length()) {
+        byte lapide = arq.readByte();
+        short tam = arq.readShort();
+
+        byte[] ba = new byte[tam];
+        arq.readFully(ba);
+
+        if (lapide == 0) {
+            Abrigo a = new Abrigo();
+            a.fromBytes(ba);
+            lista.add(a);
+        }
+    }
+
+    return lista;
+}
 }

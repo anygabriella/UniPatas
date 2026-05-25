@@ -2,102 +2,147 @@ package br.com.unipatas.view.usuario;
 
 import br.com.unipatas.controller.UsuarioController;
 import br.com.unipatas.model.Usuario;
+import br.com.unipatas.view.util.AlertaUtil;
+
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+
+import java.util.List;
 
 public class UsuarioBuscaView {
 
-  private UsuarioController controller;
+    private UsuarioController controller;
+    private TableView<Usuario> tabela;
+    private TextField txtFiltro;
 
-  public UsuarioBuscaView() {
-    try {
-      this.controller = new UsuarioController();
-    } catch (Exception e) {
-      mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao conectar ao banco de dados.");
-    }
-  }
-
-  public VBox getConteudo() {
-    VBox layoutPrincipal = new VBox(20);
-    layoutPrincipal.setAlignment(Pos.CENTER);
-    layoutPrincipal.setPadding(new Insets(25));
-
-    // --- Área de Pesquisa ---
-    HBox hbBusca = new HBox(10);
-    hbBusca.setAlignment(Pos.CENTER);
-
-    TextField txtIdBusca = new TextField();
-    txtIdBusca.setPromptText("ID do Usuário");
-    txtIdBusca.setPrefWidth(120);
-
-    Button btnBuscar = new Button("Buscar");
-    btnBuscar.getStyleClass().add("botao-principal");
-
-    hbBusca.getChildren().addAll(new Label("ID:"), txtIdBusca, btnBuscar);
-
-    // --- Área de Resultados ---
-    GridPane gridResultados = new GridPane();
-    gridResultados.setAlignment(Pos.CENTER);
-    gridResultados.setHgap(10);
-    gridResultados.setVgap(10);
-    gridResultados.getStyleClass().add("form-grid");
-
-    Label lblResultadoId = new Label("-");
-    Label lblResultadoNome = new Label("-");
-    Label lblResultadoCpf = new Label("-");
-    Label lblResultadoEmail = new Label("-");
-    Label lblResultadoCidade = new Label("-");
-
-    gridResultados.add(new Label("ID:"), 0, 0);
-    gridResultados.add(lblResultadoId, 1, 0);
-    gridResultados.add(new Label("Nome:"), 0, 1);
-    gridResultados.add(lblResultadoNome, 1, 1);
-    gridResultados.add(new Label("CPF:"), 0, 2);
-    gridResultados.add(lblResultadoCpf, 1, 2);
-    gridResultados.add(new Label("Email:"), 0, 3);
-    gridResultados.add(lblResultadoEmail, 1, 3);
-    gridResultados.add(new Label("Cidade:"), 0, 4);
-    gridResultados.add(lblResultadoCidade, 1, 4);
-
-    btnBuscar.setOnAction(e -> {
-      try {
-        int id = Integer.parseInt(txtIdBusca.getText().trim());
-        Usuario user = controller.buscarUsuarioPorId(id);
-
-        if (user != null) {
-          lblResultadoId.setText(String.valueOf(user.getId()));
-          lblResultadoNome.setText(user.getNome());
-          lblResultadoCpf.setText(user.getCpf());
-          lblResultadoEmail.setText(user.getEmail());
-          lblResultadoCidade.setText(user.getCidade());
-        } else {
-          mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Usuário não encontrado!");
-          lblResultadoId.setText("-");
-          lblResultadoNome.setText("-");
-          lblResultadoCpf.setText("-");
-          lblResultadoEmail.setText("-");
-          lblResultadoCidade.setText("-");
+    public UsuarioBuscaView() {
+        try {
+            controller = new UsuarioController();
+        } catch (Exception e) {
+            AlertaUtil.mostrar(
+                    Alert.AlertType.ERROR,
+                    "Erro Crítico",
+                    "Não foi possível conectar ao banco de usuários."
+            );
         }
-      } catch (NumberFormatException ex) {
-        mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Digite um ID numérico válido.");
-      } catch (Exception ex) {
-        mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao buscar: " + ex.getMessage());
-      }
-    });
+    }
 
-    layoutPrincipal.getChildren().addAll(hbBusca, gridResultados);
-    return layoutPrincipal;
-  }
+    public VBox getConteudo() {
+        VBox layout = new VBox(14);
+        layout.setPadding(new Insets(25));
+        layout.getStyleClass().add("tela-listagem");
 
-  private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensagem) {
-    Alert alerta = new Alert(tipo);
-    alerta.setTitle(titulo);
-    alerta.setHeaderText(null);
-    alerta.setContentText(mensagem);
-    alerta.showAndWait();
-  }
+        Label titulo = new Label("Pesquisar usuários");
+        titulo.getStyleClass().add("label-secao");
+
+        txtFiltro = new TextField();
+        txtFiltro.setPromptText("Filtrar por ID, nome, CPF, email, telefone, cidade ou estado");
+        HBox.setHgrow(txtFiltro, Priority.ALWAYS);
+
+        Button btnFiltrar = new Button("Filtrar");
+        btnFiltrar.getStyleClass().add("botao-secundario");
+
+        Button btnAtualizar = new Button("Atualizar");
+        btnAtualizar.getStyleClass().add("botao-principal");
+
+        HBox barraAcoes = new HBox(10, txtFiltro, btnFiltrar, btnAtualizar);
+
+        tabela = new TableView<>();
+        tabela.setPrefHeight(420);
+        VBox.setVgrow(tabela, Priority.ALWAYS);
+
+        TableColumn<Usuario, Integer> colId = new TableColumn<>("ID");
+        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colId.setPrefWidth(60);
+
+        TableColumn<Usuario, String> colNome = new TableColumn<>("Nome");
+        colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
+
+        TableColumn<Usuario, String> colCpf = new TableColumn<>("CPF");
+        colCpf.setCellValueFactory(new PropertyValueFactory<>("cpf"));
+
+        TableColumn<Usuario, String> colEmail = new TableColumn<>("Email");
+        colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+
+        TableColumn<Usuario, String> colTelefone = new TableColumn<>("Telefone");
+        colTelefone.setCellValueFactory(new PropertyValueFactory<>("telefone"));
+
+        TableColumn<Usuario, String> colCidade = new TableColumn<>("Cidade");
+        colCidade.setCellValueFactory(new PropertyValueFactory<>("cidade"));
+
+        TableColumn<Usuario, String> colEstado = new TableColumn<>("Estado");
+        colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
+
+        tabela.getColumns().addAll(
+                colId,
+                colNome,
+                colCpf,
+                colEmail,
+                colTelefone,
+                colCidade,
+                colEstado
+        );
+
+        tabela.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        btnFiltrar.setOnAction(e -> carregarUsuarios());
+
+        btnAtualizar.setOnAction(e -> {
+            txtFiltro.clear();
+            carregarUsuarios();
+        });
+
+        carregarUsuarios();
+
+        layout.getChildren().addAll(titulo, barraAcoes, tabela);
+
+        return layout;
+    }
+
+    private void carregarUsuarios() {
+        try {
+            List<Usuario> usuarios = controller.listarTodos();
+
+            String filtro = txtFiltro == null
+                    ? ""
+                    : txtFiltro.getText().trim().toLowerCase();
+
+            if (!filtro.isEmpty()) {
+                usuarios = usuarios.stream()
+                        .filter(usuario ->
+                                String.valueOf(usuario.getId()).contains(filtro)
+                                        || contem(usuario.getNome(), filtro)
+                                        || contem(usuario.getCpf(), filtro)
+                                        || contem(usuario.getEmail(), filtro)
+                                        || contem(usuario.getTelefone(), filtro)
+                                        || contem(usuario.getCidade(), filtro)
+                                        || contem(usuario.getEstado(), filtro)
+                        )
+                        .toList();
+            }
+
+            tabela.setItems(FXCollections.observableArrayList(usuarios));
+
+        } catch (Exception e) {
+            AlertaUtil.mostrar(
+                    Alert.AlertType.ERROR,
+                    "Erro",
+                    "Erro ao carregar usuários: " + e.getMessage()
+            );
+        }
+    }
+
+    private boolean contem(String texto, String filtro) {
+        return texto != null && texto.toLowerCase().contains(filtro);
+    }
 }

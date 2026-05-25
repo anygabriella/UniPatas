@@ -2,106 +2,137 @@ package br.com.unipatas.view.campanha;
 
 import br.com.unipatas.controller.CampanhaController;
 import br.com.unipatas.model.Campanha;
-import javafx.geometry.*;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import br.com.unipatas.view.util.AlertaUtil;
+
+import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+
+import java.util.List;
 
 public class CampanhaBuscaView {
 
-  private CampanhaController controller;
+    private CampanhaController controller;
+    private TableView<Campanha> tabela;
+    private TextField txtFiltro;
 
-  public CampanhaBuscaView() {
-    try {
-      controller = new CampanhaController();
-    } catch (Exception e) {
-      mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao conectar ao banco.");
-    }
-  }
-
-  public VBox getConteudo() {
-
-    VBox layout = new VBox(20);
-    layout.setAlignment(Pos.CENTER);
-    layout.setPadding(new Insets(25));
-
-    HBox hbBusca = new HBox(10);
-    hbBusca.setAlignment(Pos.CENTER);
-
-    TextField txtId = new TextField();
-    txtId.setPromptText("ID da Campanha");
-    txtId.setPrefWidth(120);
-
-    Button btn = new Button("Buscar");
-    btn.getStyleClass().add("botao-principal");
-
-    hbBusca.getChildren().addAll(new Label("ID:"), txtId, btn);
-
-    GridPane grid = new GridPane();
-    grid.setAlignment(Pos.CENTER);
-    grid.setHgap(10);
-    grid.setVgap(10);
-    grid.getStyleClass().add("form-grid");
-
-    Label lblId = new Label("-");
-    Label lblNome = new Label("-");
-    Label lblLocal = new Label("-");
-    Label lblData = new Label("-");
-    Label lblCusto = new Label("-");
-
-    grid.add(new Label("ID:"), 0, 0);
-    grid.add(lblId, 1, 0);
-
-    grid.add(new Label("Nome:"), 0, 1);
-    grid.add(lblNome, 1, 1);
-
-    grid.add(new Label("Local:"), 0, 2);
-    grid.add(lblLocal, 1, 2);
-
-    grid.add(new Label("Data:"), 0, 3);
-    grid.add(lblData, 1, 3);
-
-    grid.add(new Label("Custo:"), 0, 4);
-    grid.add(lblCusto, 1, 4);
-
-    btn.setOnAction(e -> {
-      try {
-        int id = Integer.parseInt(txtId.getText().trim());
-
-        Campanha c = controller.buscar(id);
-
-        if (c != null) {
-          lblId.setText(String.valueOf(c.getId()));
-          lblNome.setText(c.getNome());
-          lblLocal.setText(c.getLocal());
-          lblData.setText(c.getData());
-          lblCusto.setText(String.valueOf(c.getCusto()));
-        } else {
-          mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Campanha não encontrada!");
-
-          // limpar tela
-          lblId.setText("-");
-          lblNome.setText("-");
-          lblLocal.setText("-");
-          lblData.setText("-");
-          lblCusto.setText("-");
+    public CampanhaBuscaView() {
+        try {
+            controller = new CampanhaController();
+        } catch (Exception e) {
+            AlertaUtil.mostrar(
+                    Alert.AlertType.ERROR,
+                    "Erro Crítico",
+                    "Não foi possível conectar ao banco de campanhas."
+            );
         }
+    }
 
-      } catch (NumberFormatException ex) {
-        mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Digite um ID válido.");
-      } catch (Exception ex) {
-        mostrarAlerta(Alert.AlertType.ERROR, "Erro", ex.getMessage());
-      }
-    });
+    public VBox getConteudo() {
+        VBox layout = new VBox(14);
+        layout.setPadding(new Insets(25));
+        layout.getStyleClass().add("tela-listagem");
 
-    layout.getChildren().addAll(hbBusca, grid);
-    return layout;
-  }
+        Label titulo = new Label("Pesquisar campanhas");
+        titulo.getStyleClass().add("label-secao");
 
-  private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensagem) {
-    Alert alerta = new Alert(tipo);
-    alerta.setTitle(titulo);
-    alerta.setHeaderText(null);
-    alerta.setContentText(mensagem);
-    alerta.showAndWait();
-  }
+        txtFiltro = new TextField();
+        txtFiltro.setPromptText("Filtrar por ID, nome, local, data ou custo");
+        HBox.setHgrow(txtFiltro, Priority.ALWAYS);
+
+        Button btnFiltrar = new Button("Filtrar");
+        btnFiltrar.getStyleClass().add("botao-secundario");
+
+        Button btnAtualizar = new Button("Atualizar");
+        btnAtualizar.getStyleClass().add("botao-principal");
+
+        HBox barraAcoes = new HBox(10, txtFiltro, btnFiltrar, btnAtualizar);
+
+        tabela = new TableView<>();
+        tabela.setPrefHeight(420);
+        VBox.setVgrow(tabela, Priority.ALWAYS);
+
+        TableColumn<Campanha, Integer> colId = new TableColumn<>("ID");
+        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colId.setPrefWidth(60);
+
+        TableColumn<Campanha, String> colNome = new TableColumn<>("Nome");
+        colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
+
+        TableColumn<Campanha, String> colLocal = new TableColumn<>("Local");
+        colLocal.setCellValueFactory(new PropertyValueFactory<>("local"));
+
+        TableColumn<Campanha, String> colData = new TableColumn<>("Data");
+        colData.setCellValueFactory(new PropertyValueFactory<>("data"));
+
+        TableColumn<Campanha, Double> colCusto = new TableColumn<>("Custo");
+        colCusto.setCellValueFactory(new PropertyValueFactory<>("custo"));
+
+        tabela.getColumns().addAll(
+                colId,
+                colNome,
+                colLocal,
+                colData,
+                colCusto
+        );
+
+        tabela.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        btnFiltrar.setOnAction(e -> carregarCampanhas());
+
+        btnAtualizar.setOnAction(e -> {
+            txtFiltro.clear();
+            carregarCampanhas();
+        });
+
+        carregarCampanhas();
+
+        layout.getChildren().addAll(titulo, barraAcoes, tabela);
+
+        return layout;
+    }
+
+    private void carregarCampanhas() {
+        try {
+            List<Campanha> campanhas = controller.listarTodos();
+
+            String filtro = txtFiltro == null
+                    ? ""
+                    : txtFiltro.getText().trim().toLowerCase();
+
+            if (!filtro.isEmpty()) {
+                campanhas = campanhas.stream()
+                        .filter(campanha ->
+                                String.valueOf(campanha.getId()).contains(filtro)
+                                        || contem(campanha.getNome(), filtro)
+                                        || contem(campanha.getLocal(), filtro)
+                                        || contem(campanha.getData(), filtro)
+                                        || String.valueOf(campanha.getCusto()).contains(filtro)
+                        )
+                        .toList();
+            }
+
+            tabela.setItems(FXCollections.observableArrayList(campanhas));
+
+        } catch (Exception e) {
+            AlertaUtil.mostrar(
+                    Alert.AlertType.ERROR,
+                    "Erro",
+                    "Erro ao carregar campanhas: " + e.getMessage()
+            );
+        }
+    }
+
+    private boolean contem(String texto, String filtro) {
+        return texto != null && texto.toLowerCase().contains(filtro);
+    }
 }

@@ -1,5 +1,6 @@
 package br.com.unipatas.controller;
 
+import java.util.List;
 import br.com.unipatas.dao.UsuarioDAO;
 import br.com.unipatas.model.Usuario;
 
@@ -48,4 +49,7 @@ public class UsuarioController {
   public boolean deletarUsuario(String nome) throws Exception {
     return usuarioDAO.delete(nome);
   }
+  public List<Usuario> listarTodos() throws Exception {
+    return usuarioDAO.readAll();
+}
 }

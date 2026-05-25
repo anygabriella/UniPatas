@@ -8,7 +8,10 @@ public class CampanhaGerenciamentoView {
     public TabPane getPainelAbas() {
         TabPane tabPane = new TabPane();
 
-        Tab tabCadastro = new Tab("Cadastrar Campanha");
+        Tab tabCampanhas = new Tab("Campanhas");
+        tabCampanhas.setClosable(false);
+
+        Tab tabCadastro = new Tab("Cadastrar");
         CampanhaCadastroView cadastroView = new CampanhaCadastroView();
         tabCadastro.setContent(cadastroView.getConteudo());
         tabCadastro.setClosable(false);
@@ -28,17 +31,16 @@ public class CampanhaGerenciamentoView {
         tabRemover.setContent(removerView.getConteudo());
         tabRemover.setClosable(false);
 
-        Tab tabRelacionamento = new Tab("Animais da Campanha");
-        tabRelacionamento.setContent(new AnimalCampanhaView());
-        tabRelacionamento.setClosable(false);
-
         tabPane.getTabs().addAll(
-            tabCadastro,
-            tabBusca,
-            tabAtualizar,
-            tabRemover,
-            tabRelacionamento
+                tabCampanhas,
+                tabCadastro,
+                tabBusca,
+                tabAtualizar,
+                tabRemover
         );
+
+        CampanhaCardsView cardsView = new CampanhaCardsView(tabPane);
+        tabCampanhas.setContent(cardsView);
 
         return tabPane;
     }

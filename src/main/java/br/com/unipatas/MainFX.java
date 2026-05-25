@@ -1,5 +1,10 @@
 package br.com.unipatas;
 
+
+import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.effect.ColorAdjust;
 import br.com.unipatas.view.abrigo.AbrigoGerenciamentoView;
 import br.com.unipatas.view.animal.AnimalGerenciamentoView;
 import br.com.unipatas.view.campanha.CampanhaGerenciamentoView;
@@ -17,6 +22,23 @@ import javafx.stage.Stage;
 
 public class MainFX extends Application {
 
+
+  private Button criarBotaoMenuComIcone(String texto, String caminhoIcone) {
+    Image imagem = new Image(getClass().getResourceAsStream(caminhoIcone));
+
+    ImageView icone = new ImageView(imagem);
+    icone.setFitWidth(18);
+    icone.setFitHeight(18);
+    icone.setPreserveRatio(true);
+    icone.setSmooth(true);
+
+    Button botao = new Button(texto, icone);
+    botao.setGraphicTextGap(10);
+    botao.getStyleClass().add("menu-botao");
+
+    return botao;
+}
+
   @Override
   public void start(Stage primaryStage) {
     primaryStage.setTitle("UniPatas - Sistema de Adoção");
@@ -28,20 +50,29 @@ public class MainFX extends Application {
     menuLateral.setPrefWidth(210);
     menuLateral.getStyleClass().add("menu-lateral");
 
-    Label lblTitulo = new Label("🐾 UniPatas");
+  ImageView logoTitulo = new ImageView(
+        new Image(getClass().getResourceAsStream("/br/icons/pata.png"))
+);
+
+    logoTitulo.setFitWidth(24);
+    logoTitulo.setFitHeight(24);
+    logoTitulo.setPreserveRatio(true);
+    logoTitulo.setSmooth(true);
+
+    Label lblTitulo = new Label("UniPatas", logoTitulo);
+    lblTitulo.setGraphicTextGap(10);
     lblTitulo.getStyleClass().add("menu-titulo");
     lblTitulo.setMaxWidth(Double.MAX_VALUE);
 
     Region spacer = new Region();
     spacer.setPrefHeight(8);
 
-    Button btnUsuarios = new Button("👥  Usuários");
-    Button btnAnimais = new Button("🐶  Animais");
-    Button btnAbrigos = new Button("🏠  Abrigos");
-    Button btnCampanhas = new Button("📢  Campanhas");
-    Button btnVinculos = new Button("🔗  Vincular N:N");
+    Button btnUsuarios = criarBotaoMenuComIcone("Usuarios","/br/icons/users-round.png");
+    Button btnAnimais = criarBotaoMenuComIcone("Animais","/br/icons/dog.png");
+    Button btnAbrigos = criarBotaoMenuComIcone("Abrigos","/br/icons/house-heart.png");
+    Button btnCampanhas = criarBotaoMenuComIcone("Campanha","/br/icons/rocket.png");
 
-    for (Button btn : new Button[] { btnUsuarios, btnAnimais, btnAbrigos, btnCampanhas, btnVinculos }) {
+    for (Button btn : new Button[] { btnUsuarios, btnAnimais, btnAbrigos, btnCampanhas}) {
       btn.setMaxWidth(Double.MAX_VALUE);
       btn.getStyleClass().add("menu-botao");
     }
@@ -52,8 +83,8 @@ public class MainFX extends Application {
         btnUsuarios,
         btnAnimais,
         btnAbrigos,
-        btnCampanhas,
-        btnVinculos);
+        btnCampanhas
+    );
 
     layoutPrincipal.setLeft(menuLateral);
 
@@ -74,8 +105,7 @@ public class MainFX extends Application {
     btnAnimais.setOnAction(e -> layoutPrincipal.setCenter(new AnimalGerenciamentoView().getPainelAbas()));
     btnAbrigos.setOnAction(e -> layoutPrincipal.setCenter(new AbrigoGerenciamentoView().getPainelAbas()));
     btnCampanhas.setOnAction(e -> layoutPrincipal.setCenter(new CampanhaGerenciamentoView().getPainelAbas()));
-    btnVinculos.setOnAction(e -> layoutPrincipal.setCenter(new br.com.unipatas.view.campanha.AnimalCampanhaView()));
-
+    
     Scene scene = new Scene(layoutPrincipal, 860, 620);
     scene.getStylesheets().add(
         getClass().getResource("/br/com/unipatas/unipatas.css").toExternalForm());

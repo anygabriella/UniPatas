@@ -2,127 +2,147 @@ package br.com.unipatas.view.animal;
 
 import br.com.unipatas.controller.AnimalController;
 import br.com.unipatas.model.Animal;
+import br.com.unipatas.view.util.AlertaUtil;
 
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-
-import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+
+import java.util.List;
 
 public class AnimalBuscaView {
 
-  private AnimalController controller;
+    private AnimalController controller;
+    private TableView<Animal> tabela;
+    private TextField txtFiltro;
 
-  public AnimalBuscaView() {
-    try {
-      this.controller = new AnimalController();
-    } catch (Exception e) {
-      mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao conectar ao banco de dados.");
-    }
-  }
-
-  public VBox getConteudo() {
-
-    VBox layoutPrincipal = new VBox(20);
-    layoutPrincipal.setAlignment(Pos.CENTER);
-    layoutPrincipal.setPadding(new Insets(25));
-
-    // 🔎 BUSCA
-    HBox hbBusca = new HBox(10);
-    hbBusca.setAlignment(Pos.CENTER);
-
-    TextField txtIdBusca = new TextField();
-    txtIdBusca.setPromptText("ID do Animal");
-    txtIdBusca.setPrefWidth(120);
-
-    Button btnBuscar = new Button("Buscar");
-    btnBuscar.getStyleClass().add("botao-principal");
-
-    hbBusca.getChildren().addAll(new Label("ID:"), txtIdBusca, btnBuscar);
-
-    // 📋 RESULTADOS
-    GridPane gridResultados = new GridPane();
-    gridResultados.setAlignment(Pos.CENTER);
-    gridResultados.setHgap(10);
-    gridResultados.setVgap(10);
-    gridResultados.getStyleClass().add("form-grid");
-
-    Label lblId = new Label("-");
-    Label lblNome = new Label("-");
-    Label lblRaca = new Label("-");
-    Label lblPorte = new Label("-");
-    Label lblPeso = new Label("-");
-    Label lblData = new Label("-");
-    Label lblAbrigo = new Label("-");
-
-    gridResultados.add(new Label("ID:"), 0, 0);
-    gridResultados.add(lblId, 1, 0);
-
-    gridResultados.add(new Label("Nome:"), 0, 1);
-    gridResultados.add(lblNome, 1, 1);
-
-    gridResultados.add(new Label("Raça:"), 0, 2);
-    gridResultados.add(lblRaca, 1, 2);
-
-    gridResultados.add(new Label("Porte:"), 0, 3);
-    gridResultados.add(lblPorte, 1, 3);
-
-    gridResultados.add(new Label("Peso:"), 0, 4);
-    gridResultados.add(lblPeso, 1, 4);
-
-    gridResultados.add(new Label("Data Adoção:"), 0, 5);
-    gridResultados.add(lblData, 1, 5);
-
-    gridResultados.add(new Label("ID Abrigo:"), 0, 6);
-    gridResultados.add(lblAbrigo, 1, 6);
-
-    // 🔍 AÇÃO BUSCAR
-    btnBuscar.setOnAction(e -> {
-      try {
-        int id = Integer.parseInt(txtIdBusca.getText().trim());
-
-        Animal a = controller.buscar(id);
-
-        if (a != null) {
-          lblId.setText(String.valueOf(a.getId()));
-          lblNome.setText(a.getNome());
-          lblRaca.setText(a.getRaca());
-          lblPorte.setText(a.getPorte());
-          lblPeso.setText(String.valueOf(a.getPeso()));
-          lblData.setText(a.getDataAdocao());
-          lblAbrigo.setText(String.valueOf(a.getIdAbrigo()));
-        } else {
-
-          mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Animal não encontrado!");
-
-          lblId.setText("-");
-          lblNome.setText("-");
-          lblRaca.setText("-");
-          lblPorte.setText("-");
-          lblPeso.setText("-");
-          lblData.setText("-");
-          lblAbrigo.setText("-");
+    public AnimalBuscaView() {
+        try {
+            controller = new AnimalController();
+        } catch (Exception e) {
+            AlertaUtil.mostrar(
+                    Alert.AlertType.ERROR,
+                    "Erro Crítico",
+                    "Não foi possível conectar ao banco de animais."
+            );
         }
+    }
 
-      } catch (NumberFormatException ex) {
-        mostrarAlerta(Alert.AlertType.WARNING, "Aviso", "Digite um ID numérico válido.");
-      } catch (Exception ex) {
-        ex.printStackTrace();
-        mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao buscar: " + ex.getMessage());
-      }
-    });
+    public VBox getConteudo() {
+        VBox layout = new VBox(14);
+        layout.setPadding(new Insets(25));
+        layout.getStyleClass().add("tela-listagem");
 
-    layoutPrincipal.getChildren().addAll(hbBusca, gridResultados);
-    return layoutPrincipal;
-  }
+        Label titulo = new Label("Pesquisar animais");
+        titulo.getStyleClass().add("label-secao");
 
-  private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensagem) {
-    Alert alerta = new Alert(tipo);
-    alerta.setTitle(titulo);
-    alerta.setHeaderText(null);
-    alerta.setContentText(mensagem);
-    alerta.showAndWait();
-  }
+        txtFiltro = new TextField();
+        txtFiltro.setPromptText("Filtrar por ID, nome, raça, porte ou ID do abrigo");
+        HBox.setHgrow(txtFiltro, Priority.ALWAYS);
+
+        Button btnFiltrar = new Button("Filtrar");
+        btnFiltrar.getStyleClass().add("botao-secundario");
+
+        Button btnAtualizar = new Button("Atualizar");
+        btnAtualizar.getStyleClass().add("botao-principal");
+
+        HBox barraAcoes = new HBox(10, txtFiltro, btnFiltrar, btnAtualizar);
+
+        tabela = new TableView<>();
+        tabela.setPrefHeight(420);
+        VBox.setVgrow(tabela, Priority.ALWAYS);
+
+        TableColumn<Animal, Integer> colId = new TableColumn<>("ID");
+        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colId.setPrefWidth(60);
+
+        TableColumn<Animal, String> colNome = new TableColumn<>("Nome");
+        colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
+
+        TableColumn<Animal, String> colRaca = new TableColumn<>("Raça");
+        colRaca.setCellValueFactory(new PropertyValueFactory<>("raca"));
+
+        TableColumn<Animal, String> colPorte = new TableColumn<>("Porte");
+        colPorte.setCellValueFactory(new PropertyValueFactory<>("porte"));
+
+        TableColumn<Animal, Float> colPeso = new TableColumn<>("Peso");
+        colPeso.setCellValueFactory(new PropertyValueFactory<>("peso"));
+
+        TableColumn<Animal, String> colData = new TableColumn<>("Data Adoção");
+        colData.setCellValueFactory(new PropertyValueFactory<>("dataAdocao"));
+
+        TableColumn<Animal, Integer> colAbrigo = new TableColumn<>("ID Abrigo");
+        colAbrigo.setCellValueFactory(new PropertyValueFactory<>("idAbrigo"));
+
+        tabela.getColumns().addAll(
+                colId,
+                colNome,
+                colRaca,
+                colPorte,
+                colPeso,
+                colData,
+                colAbrigo
+        );
+
+        tabela.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        btnFiltrar.setOnAction(e -> carregarAnimais());
+
+        btnAtualizar.setOnAction(e -> {
+            txtFiltro.clear();
+            carregarAnimais();
+        });
+
+        carregarAnimais();
+
+        layout.getChildren().addAll(titulo, barraAcoes, tabela);
+
+        return layout;
+    }
+
+    private void carregarAnimais() {
+        try {
+            List<Animal> animais = controller.listarTodos();
+
+            String filtro = txtFiltro == null
+                    ? ""
+                    : txtFiltro.getText().trim().toLowerCase();
+
+            if (!filtro.isEmpty()) {
+                animais = animais.stream()
+                        .filter(animal ->
+                                String.valueOf(animal.getId()).contains(filtro)
+                                        || contem(animal.getNome(), filtro)
+                                        || contem(animal.getRaca(), filtro)
+                                        || contem(animal.getPorte(), filtro)
+                                        || String.valueOf(animal.getPeso()).contains(filtro)
+                                        || contem(animal.getDataAdocao(), filtro)
+                                        || String.valueOf(animal.getIdAbrigo()).contains(filtro)
+                        )
+                        .toList();
+            }
+
+            tabela.setItems(FXCollections.observableArrayList(animais));
+
+        } catch (Exception e) {
+            AlertaUtil.mostrar(
+                    Alert.AlertType.ERROR,
+                    "Erro",
+                    "Erro ao carregar animais: " + e.getMessage()
+            );
+        }
+    }
+
+    private boolean contem(String texto, String filtro) {
+        return texto != null && texto.toLowerCase().contains(filtro);
+    }
 }

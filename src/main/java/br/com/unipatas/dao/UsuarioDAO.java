@@ -1,7 +1,9 @@
 package br.com.unipatas.dao;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -219,6 +221,27 @@ public class UsuarioDAO {
 
   }
 
+  public List<Usuario> readAll() throws Exception {
+    List<Usuario> lista = new ArrayList<>();
+
+    arq.seek(4);
+
+    while (arq.getFilePointer() < arq.length()) {
+        byte lapide = arq.readByte();
+        short tam = arq.readShort();
+
+        byte[] by = new byte[tam];
+        arq.readFully(by);
+
+        if (lapide == 0) {
+            Usuario u = new Usuario();
+            u.fromBytes(by);
+            lista.add(u);
+        }
+    }
+
+    return lista;
+  }
 
   // ── ORDENAÇÃO ─────────────────────────────────────
 
