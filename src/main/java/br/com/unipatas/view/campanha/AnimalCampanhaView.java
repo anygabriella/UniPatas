@@ -98,6 +98,11 @@ public class AnimalCampanhaView extends VBox {
     this.getChildren().addAll(titulo, grid, boxBotoesPrincipais, new Separator(), btnConsultar);
   }
 
+
+  public VBox getConteudo() {
+    return this;
+  }
+
   // --- Métodos de Ação dos Botões ---
 
   private void acaoVincular() {

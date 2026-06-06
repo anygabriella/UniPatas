@@ -10,8 +10,14 @@ public class CampanhaAtualizarView {
 
   private CampanhaController controller;
   private int idAtual = -1;
+  private int idInicial = -1;
 
   public CampanhaAtualizarView() {
+    this(-1);
+  }
+
+  public CampanhaAtualizarView(int idInicial) {
+    this.idInicial = idInicial;
     try {
       controller = new CampanhaController();
     } catch (Exception e) {
@@ -123,6 +129,12 @@ public class CampanhaAtualizarView {
     });
 
     layout.getChildren().addAll(hbBusca, grid, btnSalvar);
+
+    if (idInicial > 0) {
+      txtId.setText(String.valueOf(idInicial));
+      btnBuscar.fire();
+    }
+
     return layout;
   }
 

@@ -2,10 +2,9 @@ package br.com.unipatas.view.campanha;
 
 import br.com.unipatas.controller.AnimalCampanhaController;
 import br.com.unipatas.controller.AnimalController;
+import br.com.unipatas.controller.CampanhaController;
 import br.com.unipatas.model.Animal;
 import br.com.unipatas.model.Campanha;
-import br.com.unipatas.view.util.AlertaUtil;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -13,280 +12,204 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Separator;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.util.StringConverter;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class CampanhaDetalhesView extends VBox {
+public class CampanhaDetalhesView extends BorderPane {
 
-    private Campanha campanha;
-    private Runnable acaoVoltar;
-
-    private AnimalCampanhaController animalCampanhaController;
+    private final int idCampanha;
+    private CampanhaController campanhaController;
     private AnimalController animalController;
+    private AnimalCampanhaController vinculoController;
 
     private ComboBox<Animal> cbAnimais;
-    private ListView<String> listaAnimaisVinculados;
+    private ListView<Animal> listaAnimais;
+    private Label lblResumo;
 
-    public CampanhaDetalhesView(Campanha campanha, Runnable acaoVoltar) {
-        this.campanha = campanha;
-        this.acaoVoltar = acaoVoltar;
-
+    public CampanhaDetalhesView(int idCampanha) {
+        this.idCampanha = idCampanha;
+        getStyleClass().add("objetos-page");
         try {
-            this.animalCampanhaController = new AnimalCampanhaController();
-            this.animalController = new AnimalController();
+            campanhaController = new CampanhaController();
+            animalController = new AnimalController();
+            vinculoController = new AnimalCampanhaController();
+            montarTela();
         } catch (Exception e) {
-            AlertaUtil.mostrar(
-                    Alert.AlertType.ERROR,
-                    "Erro",
-                    "Não foi possível carregar os dados de animais e campanhas."
-            );
+            alerta(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar os detalhes da campanha: " + e.getMessage());
         }
-
-        montarTela();
-        carregarAnimaisComboBox();
-        carregarAnimaisVinculados();
     }
 
-    private void montarTela() {
-        this.setSpacing(18);
-        this.setPadding(new Insets(24, 0, 0, 0));
+    private void montarTela() throws Exception {
+        Campanha campanha = campanhaController.buscar(idCampanha);
+        if (campanha == null) {
+            setCenter(criarEstadoErro());
+            return;
+        }
 
-        Button btnVoltar = new Button("← Voltar para campanhas");
-        btnVoltar.getStyleClass().add("botao-secundario");
-        btnVoltar.setOnAction(e -> {
-            if (acaoVoltar != null) {
-                acaoVoltar.run();
-            }
-        });
+        VBox conteudo = new VBox(18);
+        conteudo.setPadding(new Insets(26));
 
-        VBox cardInfo = new VBox(12);
-        cardInfo.getStyleClass().add("campanha-detalhes-card");
+        Label badge = new Label("DETALHES DA CAMPANHA");
+        badge.getStyleClass().add("objetos-badge");
 
-        Label badge = new Label("Campanha #" + campanha.getId());
-        badge.getStyleClass().add("campanha-badge");
+        Label titulo = new Label(campanha.getNome());
+        titulo.getStyleClass().add("objetos-titulo");
 
-        Label nome = new Label(campanha.getNome());
-        nome.getStyleClass().add("campanha-detalhes-titulo");
-        nome.setWrapText(true);
+        Label subtitulo = new Label("Gerencie os animais vinculados a esta campanha sem sair do card.");
+        subtitulo.getStyleClass().add("objetos-subtitulo");
 
-        Label local = new Label("📍 Local: " + campanha.getLocal());
-        local.getStyleClass().add("campanha-detalhes-info");
+        GridPane dados = new GridPane();
+        dados.getStyleClass().add("campanha-detalhes-card");
+        dados.setHgap(16);
+        dados.setVgap(10);
+        dados.add(criarRotulo("ID"), 0, 0);
+        dados.add(criarValor("#" + campanha.getId()), 1, 0);
+        dados.add(criarRotulo("Local"), 0, 1);
+        dados.add(criarValor(campanha.getLocal()), 1, 1);
+        dados.add(criarRotulo("Data"), 0, 2);
+        dados.add(criarValor(campanha.getData()), 1, 2);
+        dados.add(criarRotulo("Custo"), 0, 3);
+        dados.add(criarValor("R$ " + campanha.getCusto()), 1, 3);
 
-        Label data = new Label("📅 Data: " + campanha.getData());
-        data.getStyleClass().add("campanha-detalhes-info");
+        VBox painelVinculos = new VBox(14);
+        painelVinculos.getStyleClass().add("campanha-detalhes-card");
 
-        Label custo = new Label("💰 Custo: R$ " + String.format("%.2f", campanha.getCusto()));
-        custo.getStyleClass().add("campanha-detalhes-info");
+        Label tituloVinculos = new Label("Animais vinculados");
+        tituloVinculos.getStyleClass().add("campanha-detalhes-titulo");
 
-        cardInfo.getChildren().addAll(badge, nome, local, data, custo);
+        lblResumo = new Label();
+        lblResumo.getStyleClass().add("campanha-detalhes-info");
 
-        VBox cardVinculo = new VBox(12);
-        cardVinculo.getStyleClass().add("campanha-detalhes-card");
-
-        Label tituloVinculo = new Label("Vincular animal à campanha");
-        tituloVinculo.getStyleClass().add("label-secao");
+        listaAnimais = new ListView<>();
+        listaAnimais.setPrefHeight(230);
+        VBox.setVgrow(listaAnimais, Priority.ALWAYS);
 
         cbAnimais = new ComboBox<>();
-        cbAnimais.setPromptText("Selecione um animal");
-        cbAnimais.setMaxWidth(Double.MAX_VALUE);
+        cbAnimais.setPromptText("Selecione um animal para vincular");
+        cbAnimais.setPrefWidth(320);
 
-        cbAnimais.setConverter(new StringConverter<Animal>() {
-            @Override
-            public String toString(Animal animal) {
-                if (animal == null) {
-                    return "";
-                }
-
-                return "#" + animal.getId()
-                        + " - " + animal.getNome()
-                        + " (" + animal.getRaca() + ")";
-            }
-
-            @Override
-            public Animal fromString(String string) {
-                return null;
-            }
-        });
-
-        Button btnVincular = new Button("Vincular");
+        Button btnVincular = new Button("Vincular animal");
         btnVincular.getStyleClass().add("botao-principal");
         btnVincular.setOnAction(e -> vincularAnimal());
 
-        Button btnDesvincular = new Button("Desvincular");
+        Button btnDesvincular = new Button("Desvincular selecionado");
         btnDesvincular.getStyleClass().add("botao-perigo");
-        btnDesvincular.setOnAction(e -> desvincularAnimal());
+        btnDesvincular.setOnAction(e -> desvincularAnimalSelecionado());
 
-        HBox botoes = new HBox(10, btnVincular, btnDesvincular);
-        botoes.setAlignment(Pos.CENTER_LEFT);
+        HBox acoes = new HBox(10, cbAnimais, btnVincular, btnDesvincular);
+        acoes.setAlignment(Pos.CENTER_LEFT);
 
-        cardVinculo.getChildren().addAll(
-                tituloVinculo,
-                cbAnimais,
-                botoes
-        );
+        painelVinculos.getChildren().addAll(tituloVinculos, lblResumo, listaAnimais, new Separator(), acoes);
+        conteudo.getChildren().addAll(badge, titulo, subtitulo, dados, painelVinculos);
 
-        VBox cardLista = new VBox(12);
-        cardLista.getStyleClass().add("campanha-detalhes-card");
-
-        Label tituloLista = new Label("Animais vinculados");
-        tituloLista.getStyleClass().add("label-secao");
-
-        listaAnimaisVinculados = new ListView<>();
-        listaAnimaisVinculados.setPrefHeight(180);
-        VBox.setVgrow(listaAnimaisVinculados, Priority.ALWAYS);
-
-        Button btnAtualizar = new Button("Atualizar lista");
-        btnAtualizar.getStyleClass().add("botao-secundario");
-        btnAtualizar.setOnAction(e -> carregarAnimaisVinculados());
-
-        cardLista.getChildren().addAll(tituloLista, listaAnimaisVinculados, btnAtualizar);
-
-        this.getChildren().addAll(
-                btnVoltar,
-                cardInfo,
-                cardVinculo,
-                cardLista
-        );
+        setCenter(conteudo);
+        carregarDadosVinculos();
     }
 
-    private void carregarAnimaisComboBox() {
-        try {
-            List<Animal> animais = animalController.listarTodos();
+    private Label criarRotulo(String texto) {
+        Label label = new Label(texto + ":");
+        label.getStyleClass().add("objeto-card-id");
+        return label;
+    }
 
+    private Label criarValor(String texto) {
+        Label label = new Label(texto == null || texto.isBlank() ? "Não informado" : texto);
+        label.getStyleClass().add("campanha-detalhes-info");
+        return label;
+    }
+
+    private VBox criarEstadoErro() {
+        VBox box = new VBox(10);
+        box.setAlignment(Pos.CENTER);
+        box.setPadding(new Insets(40));
+        Label titulo = new Label("Campanha não encontrada");
+        titulo.getStyleClass().add("objetos-titulo");
+        Label texto = new Label("Volte para a tela de campanhas e selecione um card válido.");
+        texto.getStyleClass().add("objetos-subtitulo");
+        box.getChildren().addAll(titulo, texto);
+        return box;
+    }
+
+    private void carregarDadosVinculos() {
+        try {
+            listaAnimais.getItems().clear();
             cbAnimais.getItems().clear();
-            cbAnimais.getItems().addAll(animais);
 
-        } catch (Exception e) {
-            AlertaUtil.mostrar(
-                    Alert.AlertType.ERROR,
-                    "Erro",
-                    "Erro ao carregar animais: " + e.getMessage()
-            );
-        }
-    }
+            List<Integer> idsVinculados = vinculoController.buscarAnimaisDaCampanha(idCampanha);
+            Set<Integer> idsSet = new HashSet<>(idsVinculados);
 
-    private void carregarAnimaisVinculados() {
-        try {
-            listaAnimaisVinculados.getItems().clear();
-
-            List<Integer> idsAnimais = animalCampanhaController.buscarAnimaisDaCampanha(campanha.getId());
-
-            if (idsAnimais.isEmpty()) {
-                listaAnimaisVinculados.getItems().add("Nenhum animal vinculado a esta campanha.");
-                return;
-            }
-
-            for (Integer idAnimal : idsAnimais) {
+            for (Integer idAnimal : idsVinculados) {
                 Animal animal = animalController.buscar(idAnimal);
-
                 if (animal != null) {
-                    listaAnimaisVinculados.getItems().add(
-                            "#" + animal.getId()
-                                    + " - " + animal.getNome()
-                                    + " | Raça: " + animal.getRaca()
-                                    + " | Porte: " + animal.getPorte()
-                    );
-                } else {
-                    listaAnimaisVinculados.getItems().add(
-                            "#" + idAnimal + " - Animal não encontrado"
-                    );
+                    listaAnimais.getItems().add(animal);
                 }
             }
 
+            for (Animal animal : animalController.listarTodos()) {
+                if (!idsSet.contains(animal.getId())) {
+                    cbAnimais.getItems().add(animal);
+                }
+            }
+
+            lblResumo.setText(listaAnimais.getItems().size() + " animal(is) vinculado(s) a esta campanha.");
         } catch (Exception e) {
-            AlertaUtil.mostrar(
-                    Alert.AlertType.ERROR,
-                    "Erro",
-                    "Erro ao carregar vínculos: " + e.getMessage()
-            );
+            alerta(Alert.AlertType.ERROR, "Erro", "Erro ao carregar vínculos: " + e.getMessage());
         }
     }
 
     private void vincularAnimal() {
-        Animal animalSelecionado = cbAnimais.getValue();
-
-        if (animalSelecionado == null) {
-            AlertaUtil.mostrar(
-                    Alert.AlertType.WARNING,
-                    "Aviso",
-                    "Selecione um animal para vincular."
-            );
+        Animal animal = cbAnimais.getValue();
+        if (animal == null) {
+            alerta(Alert.AlertType.WARNING, "Aviso", "Selecione um animal para vincular.");
             return;
         }
 
         try {
-            boolean sucesso = animalCampanhaController.vincular(
-                    animalSelecionado.getId(),
-                    campanha.getId()
-            );
-
+            boolean sucesso = vinculoController.vincular(animal.getId(), idCampanha);
             if (sucesso) {
-                AlertaUtil.mostrar(
-                        Alert.AlertType.INFORMATION,
-                        "Sucesso",
-                        "Animal vinculado à campanha com sucesso!"
-                );
-                carregarAnimaisVinculados();
+                alerta(Alert.AlertType.INFORMATION, "Sucesso", "Animal vinculado à campanha.");
+                carregarDadosVinculos();
             } else {
-                AlertaUtil.mostrar(
-                        Alert.AlertType.WARNING,
-                        "Aviso",
-                        "Este animal já está vinculado a esta campanha."
-                );
+                alerta(Alert.AlertType.WARNING, "Aviso", "Esse animal já está vinculado à campanha.");
             }
-
         } catch (Exception e) {
-            AlertaUtil.mostrar(
-                    Alert.AlertType.ERROR,
-                    "Erro",
-                    "Erro ao vincular animal: " + e.getMessage()
-            );
+            alerta(Alert.AlertType.ERROR, "Erro", e.getMessage());
         }
     }
 
-    private void desvincularAnimal() {
-        Animal animalSelecionado = cbAnimais.getValue();
-
-        if (animalSelecionado == null) {
-            AlertaUtil.mostrar(
-                    Alert.AlertType.WARNING,
-                    "Aviso",
-                    "Selecione um animal para desvincular."
-            );
+    private void desvincularAnimalSelecionado() {
+        Animal animal = listaAnimais.getSelectionModel().getSelectedItem();
+        if (animal == null) {
+            alerta(Alert.AlertType.WARNING, "Aviso", "Selecione um animal vinculado na lista.");
             return;
         }
 
         try {
-            boolean sucesso = animalCampanhaController.desvincular(
-                    animalSelecionado.getId(),
-                    campanha.getId()
-            );
-
+            boolean sucesso = vinculoController.desvincular(animal.getId(), idCampanha);
             if (sucesso) {
-                AlertaUtil.mostrar(
-                        Alert.AlertType.INFORMATION,
-                        "Sucesso",
-                        "Animal desvinculado da campanha."
-                );
-                carregarAnimaisVinculados();
+                alerta(Alert.AlertType.INFORMATION, "Sucesso", "Animal desvinculado da campanha.");
+                carregarDadosVinculos();
             } else {
-                AlertaUtil.mostrar(
-                        Alert.AlertType.WARNING,
-                        "Aviso",
-                        "Esse vínculo não foi encontrado."
-                );
+                alerta(Alert.AlertType.WARNING, "Aviso", "Vínculo não encontrado.");
             }
-
         } catch (Exception e) {
-            AlertaUtil.mostrar(
-                    Alert.AlertType.ERROR,
-                    "Erro",
-                    "Erro ao desvincular animal: " + e.getMessage()
-            );
+            alerta(Alert.AlertType.ERROR, "Erro", e.getMessage());
         }
+    }
+
+    private void alerta(Alert.AlertType tipo, String titulo, String texto) {
+        Alert alert = new Alert(tipo);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(texto);
+        alert.showAndWait();
     }
 }

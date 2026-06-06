@@ -6,47 +6,31 @@ import javafx.scene.control.TabPane;
 public class AbrigoGerenciamentoView {
 
     public TabPane getPainelAbas() {
-
         TabPane tabPane = new TabPane();
 
-   
-        Tab tabCadastro = new Tab("Cadastrar Abrigo");
-        AbrigoCadastroView cadastroView = new AbrigoCadastroView();
-        tabCadastro.setContent(cadastroView.getConteudo());
+        Tab tabObjetos = new Tab("Abrigos");
+        tabObjetos.setClosable(false);
+
+        Tab tabGerenciar = new Tab("Gerenciar");
+        tabGerenciar.setClosable(false);
+
+        Tab tabCadastro = new Tab("Cadastrar");
+        tabCadastro.setContent(new AbrigoCadastroView().getConteudo());
         tabCadastro.setClosable(false);
 
-     
-        Tab tabBusca = new Tab("Pesquisar");
-        AbrigoBuscaView buscaView = new AbrigoBuscaView();
-        tabBusca.setContent(buscaView.getConteudo());
-        tabBusca.setClosable(false);
-
-     
         Tab tabAtualizar = new Tab("Atualizar");
-        AbrigoAtualizarView atualizarView = new AbrigoAtualizarView();
-        tabAtualizar.setContent(atualizarView.getConteudo());
+        tabAtualizar.setContent(new AbrigoAtualizarView().getConteudo());
         tabAtualizar.setClosable(false);
 
-       
         Tab tabAnimais = new Tab("Animais do Abrigo");
         tabAnimais.setContent(new AbrigoAnimaisView().getConteudo());
         tabAnimais.setClosable(false);
 
-     
-        Tab tabRemover = new Tab("Remover");
-        AbrigoRemoverView removerView = new AbrigoRemoverView();
-        tabRemover.setContent(removerView.getConteudo());
-        tabRemover.setClosable(false);
+        AbrigoObjetosView objetosView = new AbrigoObjetosView(tabPane, tabCadastro, tabAtualizar);
+        tabObjetos.setContent(objetosView);
+        tabGerenciar.setContent(objetosView.getGerenciamento());
 
-      
-        tabPane.getTabs().addAll(
-            tabCadastro,
-            tabBusca,
-            tabAtualizar,
-            tabAnimais,
-            tabRemover
-        );
-
+        tabPane.getTabs().addAll(tabObjetos, tabGerenciar, tabCadastro, tabAtualizar, tabAnimais);
         return tabPane;
     }
 }

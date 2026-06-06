@@ -10,8 +10,14 @@ public class AbrigoAtualizarView {
 
   private AbrigoController controller;
   private int idAtual = -1;
+  private int idInicial = -1;
 
   public AbrigoAtualizarView() {
+    this(-1);
+  }
+
+  public AbrigoAtualizarView(int idInicial) {
+    this.idInicial = idInicial;
     try {
       controller = new AbrigoController();
     } catch (Exception e) {
@@ -134,6 +140,12 @@ public class AbrigoAtualizarView {
     });
 
     layout.getChildren().addAll(hb, grid, btnSalvar);
+
+    if (idInicial > 0) {
+      txtId.setText(String.valueOf(idInicial));
+      btnBuscar.fire();
+    }
+
     return layout;
   }
 

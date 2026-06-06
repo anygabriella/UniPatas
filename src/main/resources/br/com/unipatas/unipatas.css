@@ -625,3 +625,298 @@
   -fx-background-color: #fff3e0;
   -fx-text-fill: #1f2937;
 }
+/* ══════════════════════════════════════════════
+   REFINAMENTO UI/UX — DASHBOARD E MENU ATIVO
+   ══════════════════════════════════════════════ */
+.menu-subtitulo {
+  -fx-text-fill: #8b93a7;
+  -fx-font-size: 11px;
+  -fx-padding: 0 20px 18px 20px;
+  -fx-background-color: #16213e;
+}
+
+.menu-botao-ativo {
+  -fx-background-color: linear-gradient(to right, #f77f00, #ffb86c);
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+}
+
+.menu-botao-ativo:hover {
+  -fx-background-color: linear-gradient(to right, #f77f00, #ffb86c);
+  -fx-text-fill: white;
+}
+
+.dashboard {
+  -fx-background-color: #f6f7fb;
+}
+
+.dashboard-conteudo {
+  -fx-background-color: transparent;
+}
+
+.dashboard-hero {
+  -fx-background-color: linear-gradient(to right, #16213e, #243b55);
+  -fx-background-radius: 22px;
+  -fx-padding: 30px 34px;
+  -fx-effect: dropshadow(gaussian, rgba(22, 33, 62, 0.22), 18, 0, 0, 6);
+}
+
+.dashboard-badge {
+  -fx-background-color: rgba(255, 255, 255, 0.14);
+  -fx-text-fill: #fff3e0;
+  -fx-font-size: 11px;
+  -fx-font-weight: bold;
+  -fx-padding: 6px 12px;
+  -fx-background-radius: 20px;
+}
+
+.dashboard-titulo {
+  -fx-text-fill: white;
+  -fx-font-size: 30px;
+  -fx-font-weight: bold;
+}
+
+.dashboard-subtitulo {
+  -fx-text-fill: #d7dce8;
+  -fx-font-size: 14px;
+  -fx-max-width: 720px;
+}
+
+.dashboard-metricas {
+  -fx-background-color: transparent;
+}
+
+.dashboard-card {
+  -fx-background-color: white;
+  -fx-background-radius: 18px;
+  -fx-border-color: #e8eaf0;
+  -fx-border-radius: 18px;
+  -fx-padding: 18px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 14, 0, 0, 4);
+}
+
+.dashboard-card:hover {
+  -fx-translate-y: -2px;
+  -fx-border-color: #f77f00;
+  -fx-effect: dropshadow(gaussian, rgba(247, 127, 0, 0.18), 16, 0, 0, 5);
+}
+
+.dashboard-card-icone {
+  -fx-font-size: 20px;
+}
+
+.dashboard-card-valor {
+  -fx-font-size: 30px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #16213e;
+}
+
+.dashboard-card-titulo {
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #1f2937;
+}
+
+.dashboard-card-descricao {
+  -fx-font-size: 12px;
+  -fx-text-fill: #6b7280;
+}
+
+.dashboard-acoes {
+  -fx-background-color: white;
+  -fx-background-radius: 18px;
+  -fx-border-color: #e8eaf0;
+  -fx-border-radius: 18px;
+  -fx-padding: 20px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 12, 0, 0, 3);
+}
+
+.dashboard-acoes-titulo {
+  -fx-font-size: 17px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #1f2937;
+}
+
+.dashboard-acoes-subtitulo {
+  -fx-font-size: 12px;
+  -fx-text-fill: #6b7280;
+}
+
+.dashboard-botao-acao {
+  -fx-background-color: #fff3e0;
+  -fx-text-fill: #f77f00;
+  -fx-font-weight: bold;
+  -fx-padding: 9px 16px;
+  -fx-background-radius: 10px;
+  -fx-cursor: hand;
+}
+
+.dashboard-botao-acao:hover {
+  -fx-background-color: #f77f00;
+  -fx-text-fill: white;
+}
+
+.tela-listagem {
+  -fx-background-color: #f6f7fb;
+}
+
+.form-grid {
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.07), 16, 0, 0, 5);
+}
+
+/* ══════════════════════════════════════════════
+   PADRONIZAÇÃO UI/UX — OBJETOS, CARDS E TABELAS
+   ══════════════════════════════════════════════ */
+.objetos-page {
+  -fx-background-color: #f6f7fb;
+}
+
+.objetos-conteudo {
+  -fx-background-color: transparent;
+}
+
+.objetos-badge {
+  -fx-background-color: #fff3e0;
+  -fx-text-fill: #f77f00;
+  -fx-font-size: 11px;
+  -fx-font-weight: bold;
+  -fx-padding: 6px 12px;
+  -fx-background-radius: 16px;
+}
+
+.objetos-titulo {
+  -fx-font-size: 26px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #16213e;
+}
+
+.objetos-subtitulo {
+  -fx-font-size: 13px;
+  -fx-text-fill: #6b7280;
+}
+
+.cards-scroll {
+  -fx-background-color: transparent;
+  -fx-border-color: transparent;
+}
+
+.cards-scroll > .viewport {
+  -fx-background-color: transparent;
+}
+
+.objeto-card {
+  -fx-background-color: white;
+  -fx-background-radius: 18px;
+  -fx-border-color: #e8eaf0;
+  -fx-border-radius: 18px;
+  -fx-padding: 18px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 14, 0, 0, 4);
+}
+
+.objeto-card:hover {
+  -fx-translate-y: -2px;
+  -fx-border-color: #f77f00;
+  -fx-effect: dropshadow(gaussian, rgba(247, 127, 0, 0.18), 16, 0, 0, 5);
+}
+
+.objeto-card-id {
+  -fx-background-color: #eef2ff;
+  -fx-text-fill: #16213e;
+  -fx-font-size: 11px;
+  -fx-font-weight: bold;
+  -fx-padding: 4px 8px;
+  -fx-background-radius: 12px;
+}
+
+.objeto-card-titulo {
+  -fx-font-size: 17px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #1f2937;
+}
+
+.objeto-card-info {
+  -fx-font-size: 12px;
+  -fx-text-fill: #6b7280;
+}
+
+.fab {
+  -fx-background-color: linear-gradient(to right, #f77f00, #ffb86c);
+  -fx-text-fill: white;
+  -fx-font-size: 30px;
+  -fx-font-weight: bold;
+  -fx-min-width: 58px;
+  -fx-min-height: 58px;
+  -fx-background-radius: 60px;
+  -fx-cursor: hand;
+  -fx-effect: dropshadow(gaussian, rgba(247, 127, 0, 0.35), 18, 0, 0, 6);
+}
+
+.fab:hover {
+  -fx-translate-y: -2px;
+  -fx-effect: dropshadow(gaussian, rgba(247, 127, 0, 0.48), 22, 0, 0, 8);
+}
+
+.estado-vazio-card {
+  -fx-background-color: white;
+  -fx-background-radius: 18px;
+  -fx-border-color: #e8eaf0;
+  -fx-border-radius: 18px;
+  -fx-padding: 28px;
+  -fx-min-width: 320px;
+}
+
+.tabela-gerenciamento {
+  -fx-background-color: white;
+  -fx-background-radius: 16px;
+  -fx-border-color: #e8eaf0;
+  -fx-border-radius: 16px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 12, 0, 0, 3);
+}
+
+.tabela-gerenciamento .column-header-background {
+  -fx-background-color: #f9fafb;
+  -fx-background-radius: 16px 16px 0 0;
+}
+
+.tabela-gerenciamento .column-header,
+.tabela-gerenciamento .filler {
+  -fx-background-color: transparent;
+  -fx-size: 42px;
+}
+
+.tabela-gerenciamento .table-row-cell {
+  -fx-background-color: white;
+  -fx-border-color: transparent transparent #f1f3f7 transparent;
+}
+
+.tabela-gerenciamento .table-row-cell:hover {
+  -fx-background-color: #fffaf3;
+}
+
+.botao-tabela-editar {
+  -fx-background-color: #eef2ff;
+  -fx-text-fill: #16213e;
+  -fx-font-weight: bold;
+  -fx-background-radius: 9px;
+  -fx-padding: 7px 10px;
+  -fx-cursor: hand;
+}
+
+.botao-tabela-editar:hover {
+  -fx-background-color: #16213e;
+  -fx-text-fill: white;
+}
+
+.botao-tabela-excluir {
+  -fx-background-color: #fee2e2;
+  -fx-text-fill: #b91c1c;
+  -fx-font-weight: bold;
+  -fx-background-radius: 9px;
+  -fx-padding: 7px 10px;
+  -fx-cursor: hand;
+}
+
+.botao-tabela-excluir:hover {
+  -fx-background-color: #b91c1c;
+  -fx-text-fill: white;
+}

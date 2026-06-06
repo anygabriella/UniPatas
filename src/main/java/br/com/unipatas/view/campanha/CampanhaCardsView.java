@@ -140,11 +140,7 @@ public class CampanhaCardsView extends BorderPane {
     }
 
     private void abrirDetalhes(Campanha campanha) {
-        CampanhaDetalhesView detalhesView = new CampanhaDetalhesView(
-                campanha,
-                () -> carregarCampanhas()
-        );
-
+        CampanhaDetalhesView detalhesView = new CampanhaDetalhesView(campanha.getId());
         this.setCenter(detalhesView);
     }
 

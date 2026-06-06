@@ -56,6 +56,12 @@ public class Animal {
     public void setDataAdocao(String dataAdocao) { this.dataAdocao = dataAdocao; }
     public void setIdAbrigo(int idAbrigo) { this.idAbrigo = idAbrigo; }
 
+
+    @Override
+    public String toString() {
+        return "#" + id + " - " + nome + " (" + raca + ", " + porte + ")";
+    }
+
     public String mostrar() {
         return "ID: " + id +
                " | Nome: " + nome +

@@ -10,8 +10,14 @@ public class AnimalAtualizarView {
 
   private AnimalController controller;
   private int idAtual = -1;
+  private int idInicial = -1;
 
   public AnimalAtualizarView() {
+    this(-1);
+  }
+
+  public AnimalAtualizarView(int idInicial) {
+    this.idInicial = idInicial;
     try {
       this.controller = new AnimalController();
     } catch (Exception e) {
@@ -136,6 +142,12 @@ public class AnimalAtualizarView {
     });
 
     layoutPrincipal.getChildren().addAll(hbBusca, gridForm, btnSalvar);
+
+    if (idInicial > 0) {
+      txtIdBusca.setText(String.valueOf(idInicial));
+      btnBuscar.fire();
+    }
+
     return layoutPrincipal;
   }
 

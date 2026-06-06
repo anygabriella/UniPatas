@@ -1,20 +1,17 @@
 package br.com.unipatas;
 
-
-import javafx.scene.control.Button;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.effect.ColorAdjust;
 import br.com.unipatas.view.abrigo.AbrigoGerenciamentoView;
 import br.com.unipatas.view.animal.AnimalGerenciamentoView;
 import br.com.unipatas.view.campanha.CampanhaGerenciamentoView;
+import br.com.unipatas.view.dashboard.DashboardView;
 import br.com.unipatas.view.usuario.UsuarioGerenciamentoView;
-import br.com.unipatas.view.campanha.AnimalCampanhaView;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -22,6 +19,12 @@ import javafx.stage.Stage;
 
 public class MainFX extends Application {
 
+  private BorderPane layoutPrincipal;
+  private Button btnInicio;
+  private Button btnUsuarios;
+  private Button btnAnimais;
+  private Button btnAbrigos;
+  private Button btnCampanhas;
 
   private Button criarBotaoMenuComIcone(String texto, String caminhoIcone) {
     Image imagem = new Image(getClass().getResourceAsStream(caminhoIcone));
@@ -35,25 +38,27 @@ public class MainFX extends Application {
     Button botao = new Button(texto, icone);
     botao.setGraphicTextGap(10);
     botao.getStyleClass().add("menu-botao");
+    botao.setMaxWidth(Double.MAX_VALUE);
 
     return botao;
-}
+  }
 
   @Override
   public void start(Stage primaryStage) {
     primaryStage.setTitle("UniPatas - Sistema de Adoção");
-    primaryStage.setResizable(false);
+    primaryStage.setResizable(true);
+    primaryStage.setMinWidth(980);
+    primaryStage.setMinHeight(640);
 
-    BorderPane layoutPrincipal = new BorderPane();
+    layoutPrincipal = new BorderPane();
 
     VBox menuLateral = new VBox();
-    menuLateral.setPrefWidth(210);
+    menuLateral.setPrefWidth(224);
     menuLateral.getStyleClass().add("menu-lateral");
 
-  ImageView logoTitulo = new ImageView(
+    ImageView logoTitulo = new ImageView(
         new Image(getClass().getResourceAsStream("/br/icons/pata.png"))
-);
-
+    );
     logoTitulo.setFitWidth(24);
     logoTitulo.setFitHeight(24);
     logoTitulo.setPreserveRatio(true);
@@ -64,22 +69,24 @@ public class MainFX extends Application {
     lblTitulo.getStyleClass().add("menu-titulo");
     lblTitulo.setMaxWidth(Double.MAX_VALUE);
 
+    Label lblSubtitulo = new Label("Gestão de adoções");
+    lblSubtitulo.getStyleClass().add("menu-subtitulo");
+    lblSubtitulo.setMaxWidth(Double.MAX_VALUE);
+
     Region spacer = new Region();
     spacer.setPrefHeight(8);
 
-    Button btnUsuarios = criarBotaoMenuComIcone("Usuarios","/br/icons/users-round.png");
-    Button btnAnimais = criarBotaoMenuComIcone("Animais","/br/icons/dog.png");
-    Button btnAbrigos = criarBotaoMenuComIcone("Abrigos","/br/icons/house-heart.png");
-    Button btnCampanhas = criarBotaoMenuComIcone("Campanha","/br/icons/rocket.png");
-
-    for (Button btn : new Button[] { btnUsuarios, btnAnimais, btnAbrigos, btnCampanhas}) {
-      btn.setMaxWidth(Double.MAX_VALUE);
-      btn.getStyleClass().add("menu-botao");
-    }
+    btnInicio = criarBotaoMenuComIcone("Início", "/br/icons/pata.png");
+    btnUsuarios = criarBotaoMenuComIcone("Usuários", "/br/icons/users-round.png");
+    btnAnimais = criarBotaoMenuComIcone("Animais", "/br/icons/dog.png");
+    btnAbrigos = criarBotaoMenuComIcone("Abrigos", "/br/icons/house-heart.png");
+    btnCampanhas = criarBotaoMenuComIcone("Campanhas", "/br/icons/rocket.png");
 
     menuLateral.getChildren().addAll(
         lblTitulo,
+        lblSubtitulo,
         spacer,
+        btnInicio,
         btnUsuarios,
         btnAnimais,
         btnAbrigos,
@@ -88,30 +95,58 @@ public class MainFX extends Application {
 
     layoutPrincipal.setLeft(menuLateral);
 
-    VBox telaBemVindo = new VBox(10);
-    telaBemVindo.setAlignment(Pos.CENTER);
-    telaBemVindo.getStyleClass().add("tela-boas-vindas");
+    btnInicio.setOnAction(e -> mostrarDashboard());
+    btnUsuarios.setOnAction(e -> mostrarUsuarios());
+    btnAnimais.setOnAction(e -> mostrarAnimais());
+    btnAbrigos.setOnAction(e -> mostrarAbrigos());
+    btnCampanhas.setOnAction(e -> mostrarCampanhas());
 
-    Label lblBemVindo = new Label("Bem-vindo ao UniPatas 🐾");
-    lblBemVindo.getStyleClass().add("label-boas-vindas");
+    mostrarDashboard();
 
-    Label lblSub = new Label("Selecione uma opção no menu lateral para começar.");
-    lblSub.getStyleClass().add("label-boas-vindas-sub");
-
-    telaBemVindo.getChildren().addAll(lblBemVindo, lblSub);
-    layoutPrincipal.setCenter(telaBemVindo);
-
-    btnUsuarios.setOnAction(e -> layoutPrincipal.setCenter(new UsuarioGerenciamentoView().getPainelAbas()));
-    btnAnimais.setOnAction(e -> layoutPrincipal.setCenter(new AnimalGerenciamentoView().getPainelAbas()));
-    btnAbrigos.setOnAction(e -> layoutPrincipal.setCenter(new AbrigoGerenciamentoView().getPainelAbas()));
-    btnCampanhas.setOnAction(e -> layoutPrincipal.setCenter(new CampanhaGerenciamentoView().getPainelAbas()));
-    
-    Scene scene = new Scene(layoutPrincipal, 860, 620);
+    Scene scene = new Scene(layoutPrincipal, 1080, 680);
     scene.getStylesheets().add(
-        getClass().getResource("/br/com/unipatas/unipatas.css").toExternalForm());
+        getClass().getResource("/br/com/unipatas/unipatas.css").toExternalForm()
+    );
 
     primaryStage.setScene(scene);
     primaryStage.show();
+  }
+
+  private void mostrarDashboard() {
+    layoutPrincipal.setCenter(new DashboardView(
+        this::mostrarUsuarios,
+        this::mostrarAnimais,
+        this::mostrarAbrigos,
+        this::mostrarCampanhas
+    ));
+    ativarBotao(btnInicio);
+  }
+
+  private void mostrarUsuarios() {
+    layoutPrincipal.setCenter(new UsuarioGerenciamentoView().getPainelAbas());
+    ativarBotao(btnUsuarios);
+  }
+
+  private void mostrarAnimais() {
+    layoutPrincipal.setCenter(new AnimalGerenciamentoView().getPainelAbas());
+    ativarBotao(btnAnimais);
+  }
+
+  private void mostrarAbrigos() {
+    layoutPrincipal.setCenter(new AbrigoGerenciamentoView().getPainelAbas());
+    ativarBotao(btnAbrigos);
+  }
+
+  private void mostrarCampanhas() {
+    layoutPrincipal.setCenter(new CampanhaGerenciamentoView().getPainelAbas());
+    ativarBotao(btnCampanhas);
+  }
+
+  private void ativarBotao(Button botaoAtivo) {
+    for (Button botao : new Button[] { btnInicio, btnUsuarios, btnAnimais, btnAbrigos, btnCampanhas }) {
+      botao.getStyleClass().remove("menu-botao-ativo");
+    }
+    botaoAtivo.getStyleClass().add("menu-botao-ativo");
   }
 
   public static void main(String[] args) {

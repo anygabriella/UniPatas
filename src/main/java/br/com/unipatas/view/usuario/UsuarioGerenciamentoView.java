@@ -8,33 +8,25 @@ public class UsuarioGerenciamentoView {
   public TabPane getPainelAbas() {
     TabPane tabPane = new TabPane();
 
-    // Aba 1: Cadastro
-    Tab tabCadastro = new Tab("Cadastrar Usuário");
-    UsuarioCadastroView cadastroView = new UsuarioCadastroView();
-    tabCadastro.setContent(cadastroView.getConteudo());
+    Tab tabObjetos = new Tab("Usuários");
+    tabObjetos.setClosable(false);
+
+    Tab tabGerenciar = new Tab("Gerenciar");
+    tabGerenciar.setClosable(false);
+
+    Tab tabCadastro = new Tab("Cadastrar");
+    tabCadastro.setContent(new UsuarioCadastroView().getConteudo());
     tabCadastro.setClosable(false);
 
-    // Aba 2: Busca
-    Tab tabBusca = new Tab("Pesquisar");
-    UsuarioBuscaView buscaView = new UsuarioBuscaView();
-    tabBusca.setContent(buscaView.getConteudo());
-    tabBusca.setClosable(false);
-
-    // Aba 3: Atualizar
     Tab tabAtualizar = new Tab("Atualizar");
-    UsuarioAtualizarView atualizarView = new UsuarioAtualizarView();
-    tabAtualizar.setContent(atualizarView.getConteudo());
+    tabAtualizar.setContent(new UsuarioAtualizarView().getConteudo());
     tabAtualizar.setClosable(false);
 
-    // Aba 4: Remover
-    Tab tabRemover = new Tab("Remover");
-    UsuarioRemoverView removerView = new UsuarioRemoverView();
-    tabRemover.setContent(removerView.getConteudo());
-    tabRemover.setClosable(false);
+    UsuarioObjetosView objetosView = new UsuarioObjetosView(tabPane, tabCadastro, tabAtualizar);
+    tabObjetos.setContent(objetosView);
+    tabGerenciar.setContent(objetosView.getGerenciamento());
 
-    // Adiciona as abas ao painel principal
-    tabPane.getTabs().addAll(tabCadastro, tabBusca, tabAtualizar, tabRemover);
-
+    tabPane.getTabs().addAll(tabObjetos, tabGerenciar, tabCadastro, tabAtualizar);
     return tabPane;
   }
 }
