@@ -10,15 +10,11 @@ public class UsuarioController {
   private UsuarioDAO usuarioDAO;
 
   public UsuarioController() throws Exception {
-    
     this.usuarioDAO = new UsuarioDAO();
   }
 
-  
   public int salvarUsuario(String nome, String cpf, String email, String senha, String telefone, String cidade,
       String estado) throws Exception {
-    // Campo sensível: a senha nunca é gravada em texto puro.
-    // Ela é criptografada (XOR + Base64) antes de ser persistida.
     String senhaCriptografada = CriptografiaXOR.criptografar(senha);
     Usuario novoUsuario = new Usuario(nome, cpf, email, senhaCriptografada, telefone, cidade, estado);
 
@@ -33,8 +29,8 @@ public class UsuarioController {
     return usuarioDAO.readById(id);
   }
 
-  public boolean atualizarUsuarioPorId(int id, String nomeNovo, String cpf, String email, String senha, String telefone,
-      String cidade, String estado) throws Exception {
+  public boolean atualizarUsuarioPorId(int id, String nomeNovo, String cpf, String email, String senha,
+      String telefone, String cidade, String estado) throws Exception {
     String senhaParaSalvar = resolverSenha(senha, usuarioDAO.readById(id));
     Usuario usuarioModificado = new Usuario(id, nomeNovo, cpf, email, senhaParaSalvar, telefone, cidade, estado);
     return usuarioDAO.updateById(usuarioModificado);
@@ -54,16 +50,11 @@ public class UsuarioController {
   public boolean deletarUsuario(String nome) throws Exception {
     return usuarioDAO.delete(nome);
   }
+
   public List<Usuario> listarTodos() throws Exception {
     return usuarioDAO.readAll();
   }
 
-  /**
-   * Decide qual senha (já criptografada) deve ser persistida em uma
-   * atualização: se o usuário digitou uma senha nova, ela é criptografada;
-   * caso contrário, mantém-se a senha (já criptografada) que já estava
-   * salva, evitando perder a senha original quando o campo é deixado em branco.
-   */
   private String resolverSenha(String senhaDigitada, Usuario usuarioAtual) {
     if (senhaDigitada == null || senhaDigitada.isBlank()) {
       return usuarioAtual != null ? usuarioAtual.getSenha() : CriptografiaXOR.criptografar("");
