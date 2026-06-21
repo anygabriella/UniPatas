@@ -1,5 +1,6 @@
 package br.com.unipatas.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import br.com.unipatas.dao.AnimalDAO;
 import br.com.unipatas.model.Animal;
@@ -41,5 +42,30 @@ public class AnimalController {
 
     public List<Animal> listarTodos() throws Exception {
         return dao.readAll();
+    }
+
+    // Método que a tela vai chamar para pesquisar a Raça usando Boyer-Moore
+    public List<Animal> buscarPorRacaBoyerMoore(String padraoDaBusca) throws Exception {
+
+        List<Animal> todosOsAnimais = this.listarTodos();
+        List<Animal> animaisEncontrados = new ArrayList<>();
+
+        if (padraoDaBusca == null || padraoDaBusca.trim().isEmpty()) {
+            return animaisEncontrados; 
+        }
+
+        br.com.unipatas.casamentopadrao.BoyerMoore bm = new br.com.unipatas.casamentopadrao.BoyerMoore(padraoDaBusca.toLowerCase());
+
+        for (Animal animal : todosOsAnimais) {
+            String racaDoAnimal = animal.getRaca();
+
+            if (racaDoAnimal != null) {
+                if (bm.buscar(racaDoAnimal.toLowerCase())) {
+                    animaisEncontrados.add(animal); 
+                }
+            }
+        }
+
+        return animaisEncontrados;
     }
 }
