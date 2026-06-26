@@ -1,17 +1,267 @@
 package br.com.unipatas.view.abrigo;
 
-import br.com.unipatas.controller.AbrigoController; import br.com.unipatas.model.Abrigo; import javafx.geometry.*; import javafx.scene.control.*; import javafx.scene.control.cell.PropertyValueFactory; import javafx.scene.layout.*; import java.util.List;
+import br.com.unipatas.controller.AbrigoController;
+import br.com.unipatas.model.Abrigo;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.TilePane;
+import javafx.scene.layout.VBox;
+
+import java.util.List;
 
 public class AbrigoObjetosView extends BorderPane {
-  private final TabPane tabPane; private final Tab tabCadastro; private final Tab tabAtualizar; private AbrigoController controller; private TilePane cards; private TableView<Abrigo> tabela;
-  public AbrigoObjetosView(TabPane tabPane, Tab tabCadastro, Tab tabAtualizar){this.tabPane=tabPane;this.tabCadastro=tabCadastro;this.tabAtualizar=tabAtualizar;getStyleClass().add("objetos-page");try{controller=new AbrigoController();}catch(Exception e){alerta(Alert.AlertType.ERROR,"Erro","Erro ao conectar ao banco.");}montar();}
-  private void montar(){VBox conteudo=new VBox(18);conteudo.setPadding(new Insets(26));Label badge=new Label("ABRIGOS");badge.getStyleClass().add("objetos-badge");Label titulo=new Label("Abrigos cadastrados");titulo.getStyleClass().add("objetos-titulo");Label sub=new Label("Visualização em cards para acompanhar os abrigos parceiros.");sub.getStyleClass().add("objetos-subtitulo");cards=new TilePane();cards.setHgap(16);cards.setVgap(16);cards.setPrefColumns(3);ScrollPane scroll=new ScrollPane(cards);scroll.setFitToWidth(true);scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);scroll.getStyleClass().add("cards-scroll");VBox.setVgrow(scroll,Priority.ALWAYS);conteudo.getChildren().addAll(badge,titulo,sub,scroll);setCenter(conteudo);Button btnNovo=new Button("+");btnNovo.getStyleClass().add("fab");btnNovo.setOnAction(e->tabPane.getSelectionModel().select(tabCadastro));StackPane fab=new StackPane(btnNovo);fab.setAlignment(Pos.BOTTOM_RIGHT);fab.setPadding(new Insets(0,26,26,0));setBottom(fab);carregarCards();}
-  private void carregarCards(){cards.getChildren().clear();try{List<Abrigo> lista=controller.listarTodos();if(lista.isEmpty()){cards.getChildren().add(estadoVazio("Nenhum abrigo cadastrado","Clique no + para cadastrar."));return;}for(Abrigo a:lista)cards.getChildren().add(card("#"+a.getId(),a.getNome(),a.getendereco(),a.getTelefone()+" • R$ "+a.getCustoMensal()));}catch(Exception e){alerta(Alert.AlertType.ERROR,"Erro",e.getMessage());}}
-  private VBox card(String id,String titulo,String info1,String info2){VBox c=new VBox(8);c.getStyleClass().add("objeto-card");c.setPrefWidth(250);Label lid=new Label(id);lid.getStyleClass().add("objeto-card-id");Label lt=new Label(titulo);lt.getStyleClass().add("objeto-card-titulo");Label l1=new Label(info1);l1.getStyleClass().add("objeto-card-info");Label l2=new Label(info2);l2.getStyleClass().add("objeto-card-info");c.getChildren().addAll(lid,lt,l1,l2);return c;}
-  private VBox estadoVazio(String titulo,String texto){VBox v=new VBox(8,new Label("🏠"),new Label(titulo),new Label(texto));v.setAlignment(Pos.CENTER);v.getStyleClass().add("estado-vazio-card");return v;}
-  public BorderPane getGerenciamento(){BorderPane painel=new BorderPane();painel.getStyleClass().add("objetos-page");painel.setPadding(new Insets(24));VBox topo=new VBox(6);Label titulo=new Label("Gerenciar abrigos");titulo.getStyleClass().add("objetos-titulo");Label sub=new Label("Editar e excluir ficam concentrados nesta tabela.");sub.getStyleClass().add("objetos-subtitulo");topo.getChildren().addAll(titulo,sub);tabela=new TableView<>();tabela.getStyleClass().add("tabela-gerenciamento");TableColumn<Abrigo,Void> acoes=colunaAcoes();acoes.setPrefWidth(170);TableColumn<Abrigo,Integer> id=new TableColumn<>("ID");id.setCellValueFactory(new PropertyValueFactory<>("id"));id.setPrefWidth(70);TableColumn<Abrigo,String> nome=new TableColumn<>("Nome");nome.setCellValueFactory(new PropertyValueFactory<>("nome"));nome.setPrefWidth(190);TableColumn<Abrigo,String> endereco=new TableColumn<>("Endereço/Cidade");endereco.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getendereco()));endereco.setPrefWidth(190);TableColumn<Abrigo,String> telefone=new TableColumn<>("Telefone");telefone.setCellValueFactory(new PropertyValueFactory<>("telefone"));telefone.setPrefWidth(140);tabela.getColumns().addAll(acoes,id,nome,endereco,telefone);atualizarTabela();VBox box=new VBox(16,topo,tabela);VBox.setVgrow(tabela,Priority.ALWAYS);painel.setCenter(box);return painel;}
-  private TableColumn<Abrigo,Void> colunaAcoes(){TableColumn<Abrigo,Void> col=new TableColumn<>("Ações");col.setCellFactory(p->new TableCell<>(){Button editar=new Button("Editar");Button excluir=new Button("Excluir");HBox box=new HBox(8,editar,excluir);{editar.getStyleClass().add("botao-tabela-editar");excluir.getStyleClass().add("botao-tabela-excluir");editar.setOnAction(e->editar(getTableView().getItems().get(getIndex())));excluir.setOnAction(e->excluir(getTableView().getItems().get(getIndex())));}@Override protected void updateItem(Void item,boolean empty){super.updateItem(item,empty);setGraphic(empty?null:box);}});return col;}
-  private void editar(Abrigo a){tabAtualizar.setContent(new AbrigoAtualizarView(a.getId()).getConteudo());tabPane.getSelectionModel().select(tabAtualizar);} private void excluir(Abrigo a){if(confirmar("Excluir abrigo","Deseja excluir "+a.getNome()+"?")){try{controller.remover(a.getId());atualizarTabela();carregarCards();}catch(Exception e){alerta(Alert.AlertType.ERROR,"Erro",e.getMessage());}}}
-  private void atualizarTabela(){try{tabela.getItems().setAll(controller.listarTodos());}catch(Exception e){alerta(Alert.AlertType.ERROR,"Erro",e.getMessage());}}
-  private boolean confirmar(String t,String txt){Alert a=new Alert(Alert.AlertType.CONFIRMATION,txt,ButtonType.CANCEL,ButtonType.OK);a.setTitle(t);a.setHeaderText(null);return a.showAndWait().orElse(ButtonType.CANCEL)==ButtonType.OK;} private void alerta(Alert.AlertType tipo,String t,String txt){Alert a=new Alert(tipo);a.setTitle(t);a.setHeaderText(null);a.setContentText(txt);a.showAndWait();}
+  private final TabPane tabPane;
+  private final Tab tabCadastro;
+  private final Tab tabAtualizar;
+  private AbrigoController controller;
+  private TilePane cards;
+  private TableView<Abrigo> tabela;
+  private TextField txtFiltro;
+  private Label lblResultados;
+
+  public AbrigoObjetosView(TabPane tabPane, Tab tabCadastro, Tab tabAtualizar) {
+    this.tabPane = tabPane;
+    this.tabCadastro = tabCadastro;
+    this.tabAtualizar = tabAtualizar;
+    getStyleClass().add("objetos-page");
+    try {
+      controller = new AbrigoController();
+    } catch (Exception e) {
+      alerta(Alert.AlertType.ERROR, "Erro", "Erro ao conectar ao banco.");
+    }
+    montar();
+  }
+
+  private void montar() {
+    VBox conteudo = new VBox(18);
+    conteudo.setPadding(new Insets(26));
+    Label badge = new Label("ABRIGOS");
+    badge.getStyleClass().add("objetos-badge");
+    Label titulo = new Label("Abrigos cadastrados");
+    titulo.getStyleClass().add("objetos-titulo");
+    Label sub = new Label("Visualização em cards para acompanhar os abrigos parceiros.");
+    sub.getStyleClass().add("objetos-subtitulo");
+    cards = new TilePane();
+    cards.setHgap(16);
+    cards.setVgap(16);
+    cards.setPrefColumns(3);
+    ScrollPane scroll = new ScrollPane(cards);
+    scroll.setFitToWidth(true);
+    scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+    scroll.getStyleClass().add("cards-scroll");
+    VBox.setVgrow(scroll, Priority.ALWAYS);
+    conteudo.getChildren().addAll(badge, titulo, sub, scroll);
+    setCenter(conteudo);
+    Button btnNovo = new Button("+");
+    btnNovo.getStyleClass().add("fab");
+    btnNovo.setOnAction(e -> tabPane.getSelectionModel().select(tabCadastro));
+    StackPane fab = new StackPane(btnNovo);
+    fab.setAlignment(Pos.BOTTOM_RIGHT);
+    fab.setPadding(new Insets(0, 26, 26, 0));
+    setBottom(fab);
+    carregarCards();
+  }
+
+  private void carregarCards() {
+    cards.getChildren().clear();
+    try {
+      List<Abrigo> lista = controller.listarTodos();
+      if (lista.isEmpty()) {
+        cards.getChildren().add(estadoVazio("Nenhum abrigo cadastrado", "Clique no + para cadastrar."));
+        return;
+      }
+      for (Abrigo a : lista) {
+        cards.getChildren().add(card("#" + a.getId(), a.getNome(), a.getendereco(), a.getTelefone() + " • R$ " + a.getCustoMensal()));
+      }
+    } catch (Exception e) {
+      alerta(Alert.AlertType.ERROR, "Erro", e.getMessage());
+    }
+  }
+
+  private VBox card(String id, String titulo, String info1, String info2) {
+    VBox c = new VBox(8);
+    c.getStyleClass().add("objeto-card");
+    c.setPrefWidth(250);
+    Label lid = new Label(id);
+    lid.getStyleClass().add("objeto-card-id");
+    Label lt = new Label(titulo);
+    lt.getStyleClass().add("objeto-card-titulo");
+    Label l1 = new Label(info1);
+    l1.getStyleClass().add("objeto-card-info");
+    Label l2 = new Label(info2);
+    l2.getStyleClass().add("objeto-card-info");
+    c.getChildren().addAll(lid, lt, l1, l2);
+    return c;
+  }
+
+  private VBox estadoVazio(String titulo, String texto) {
+    VBox v = new VBox(8, new Label("🏠"), new Label(titulo), new Label(texto));
+    v.setAlignment(Pos.CENTER);
+    v.getStyleClass().add("estado-vazio-card");
+    return v;
+  }
+
+  public BorderPane getGerenciamento() {
+    BorderPane painel = new BorderPane();
+    painel.getStyleClass().add("objetos-page");
+    painel.setPadding(new Insets(24));
+    VBox topo = new VBox(6);
+    Label titulo = new Label("Gerenciar abrigos");
+    titulo.getStyleClass().add("objetos-titulo");
+    Label sub = new Label("Editar e excluir ficam concentrados nesta tabela.");
+    sub.getStyleClass().add("objetos-subtitulo");
+    topo.getChildren().addAll(titulo, sub);
+    tabela = new TableView<>();
+    tabela.getStyleClass().add("tabela-gerenciamento");
+    TableColumn<Abrigo, Void> acoes = colunaAcoes();
+    acoes.setPrefWidth(170);
+    TableColumn<Abrigo, Integer> id = new TableColumn<>("ID");
+    id.setCellValueFactory(new PropertyValueFactory<>("id"));
+    id.setPrefWidth(70);
+    TableColumn<Abrigo, String> nome = new TableColumn<>("Nome");
+    nome.setCellValueFactory(new PropertyValueFactory<>("nome"));
+    nome.setPrefWidth(190);
+    TableColumn<Abrigo, String> endereco = new TableColumn<>("Endereço/Cidade");
+    endereco.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getendereco()));
+    endereco.setPrefWidth(190);
+    TableColumn<Abrigo, String> telefone = new TableColumn<>("Telefone");
+    telefone.setCellValueFactory(new PropertyValueFactory<>("telefone"));
+    telefone.setPrefWidth(140);
+    tabela.getColumns().addAll(acoes, id, nome, endereco, telefone);
+
+    HBox barraBusca = criarBarraBusca("Buscar por ID, nome, endereço, cidade, telefone ou custo");
+    atualizarTabela();
+
+    VBox box = new VBox(16, topo, barraBusca, tabela);
+    VBox.setVgrow(tabela, Priority.ALWAYS);
+    painel.setCenter(box);
+    return painel;
+  }
+
+  private HBox criarBarraBusca(String prompt) {
+    txtFiltro = new TextField();
+    txtFiltro.setPromptText(prompt);
+    txtFiltro.getStyleClass().add("campo-busca");
+    txtFiltro.setMaxWidth(Double.MAX_VALUE);
+    txtFiltro.setOnAction(e -> filtrarTabela());
+
+    Button buscar = new Button("Buscar");
+    buscar.getStyleClass().add("botao-principal");
+    buscar.setOnAction(e -> filtrarTabela());
+
+    Button limpar = new Button("Limpar");
+    limpar.getStyleClass().add("botao-secundario");
+    limpar.setOnAction(e -> limparFiltro());
+
+    lblResultados = new Label();
+    lblResultados.getStyleClass().add("contador-resultados");
+
+    HBox barra = new HBox(10, txtFiltro, buscar, limpar, lblResultados);
+    barra.getStyleClass().add("barra-busca");
+    barra.setAlignment(Pos.CENTER_LEFT);
+    HBox.setHgrow(txtFiltro, Priority.ALWAYS);
+    return barra;
+  }
+
+  private TableColumn<Abrigo, Void> colunaAcoes() {
+    TableColumn<Abrigo, Void> col = new TableColumn<>("Ações");
+    col.setCellFactory(p -> new TableCell<>() {
+      Button editar = new Button("Editar");
+      Button excluir = new Button("Excluir");
+      HBox box = new HBox(8, editar, excluir);
+
+      {
+        editar.getStyleClass().add("botao-tabela-editar");
+        excluir.getStyleClass().add("botao-tabela-excluir");
+        editar.setOnAction(e -> editar(getTableView().getItems().get(getIndex())));
+        excluir.setOnAction(e -> excluir(getTableView().getItems().get(getIndex())));
+      }
+
+      @Override
+      protected void updateItem(Void item, boolean empty) {
+        super.updateItem(item, empty);
+        setGraphic(empty ? null : box);
+      }
+    });
+    return col;
+  }
+
+  private void editar(Abrigo a) {
+    tabAtualizar.setContent(new AbrigoAtualizarView(a.getId()).getConteudo());
+    tabPane.getSelectionModel().select(tabAtualizar);
+  }
+
+  private void excluir(Abrigo a) {
+    if (confirmar("Excluir abrigo", "Deseja excluir " + a.getNome() + "?")) {
+      try {
+        controller.remover(a.getId());
+        filtrarTabela();
+        carregarCards();
+      } catch (Exception e) {
+        alerta(Alert.AlertType.ERROR, "Erro", e.getMessage());
+      }
+    }
+  }
+
+  private void atualizarTabela() {
+    try {
+      List<Abrigo> abrigos = controller.listarTodos();
+      tabela.getItems().setAll(abrigos);
+      atualizarContador(abrigos.size());
+    } catch (Exception e) {
+      alerta(Alert.AlertType.ERROR, "Erro", e.getMessage());
+    }
+  }
+
+  private void filtrarTabela() {
+    try {
+      List<Abrigo> abrigos = controller.buscarPorFiltro(txtFiltro.getText());
+      tabela.getItems().setAll(abrigos);
+      atualizarContador(abrigos.size());
+    } catch (Exception e) {
+      alerta(Alert.AlertType.ERROR, "Erro", e.getMessage());
+    }
+  }
+
+  private void limparFiltro() {
+    txtFiltro.clear();
+    atualizarTabela();
+  }
+
+  private void atualizarContador(int total) {
+    if (lblResultados != null) {
+      lblResultados.setText(total + (total == 1 ? " resultado" : " resultados"));
+    }
+  }
+
+  private boolean confirmar(String t, String txt) {
+    Alert a = new Alert(Alert.AlertType.CONFIRMATION, txt, ButtonType.CANCEL, ButtonType.OK);
+    a.setTitle(t);
+    a.setHeaderText(null);
+    return a.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK;
+  }
+
+  private void alerta(Alert.AlertType tipo, String t, String txt) {
+    Alert a = new Alert(tipo);
+    a.setTitle(t);
+    a.setHeaderText(null);
+    a.setContentText(txt);
+    a.showAndWait();
+  }
 }

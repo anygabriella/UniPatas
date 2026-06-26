@@ -920,3 +920,23 @@
   -fx-background-color: #b91c1c;
   -fx-text-fill: white;
 }
+
+.barra-busca {
+  -fx-background-color: white;
+  -fx-background-radius: 14px;
+  -fx-border-color: #e8eaf0;
+  -fx-border-radius: 14px;
+  -fx-padding: 12px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.04), 10, 0, 0, 2);
+}
+
+.campo-busca {
+  -fx-pref-width: 360px;
+}
+
+.contador-resultados {
+  -fx-text-fill: #6b7280;
+  -fx-font-size: 12px;
+  -fx-font-weight: bold;
+  -fx-padding: 0 0 0 6px;
+}

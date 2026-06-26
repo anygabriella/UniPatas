@@ -7,12 +7,14 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -20,7 +22,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.Label;
 
 import java.util.List;
 
@@ -34,6 +35,8 @@ public class CampanhaObjetosView extends BorderPane {
     private CampanhaController controller;
     private TilePane cards;
     private TableView<Campanha> tabela;
+    private TextField txtFiltro;
+    private Label lblResultados;
 
     public CampanhaObjetosView(TabPane tabPane, Tab tabCadastro, Tab tabAtualizar, Tab tabDetalhes) {
         this.tabPane = tabPane;
@@ -182,12 +185,39 @@ public class CampanhaObjetosView extends BorderPane {
         data.setPrefWidth(130);
 
         tabela.getColumns().addAll(acoes, id, nome, local, data);
+
+        HBox barraBusca = criarBarraBusca("Buscar por ID, nome, local, data ou custo");
         atualizarTabela();
 
-        VBox box = new VBox(16, topo, tabela);
+        VBox box = new VBox(16, topo, barraBusca, tabela);
         VBox.setVgrow(tabela, Priority.ALWAYS);
         painel.setCenter(box);
         return painel;
+    }
+
+    private HBox criarBarraBusca(String prompt) {
+        txtFiltro = new TextField();
+        txtFiltro.setPromptText(prompt);
+        txtFiltro.getStyleClass().add("campo-busca");
+        txtFiltro.setMaxWidth(Double.MAX_VALUE);
+        txtFiltro.setOnAction(e -> filtrarTabela());
+
+        Button buscar = new Button("Buscar");
+        buscar.getStyleClass().add("botao-principal");
+        buscar.setOnAction(e -> filtrarTabela());
+
+        Button limpar = new Button("Limpar");
+        limpar.getStyleClass().add("botao-secundario");
+        limpar.setOnAction(e -> limparFiltro());
+
+        lblResultados = new Label();
+        lblResultados.getStyleClass().add("contador-resultados");
+
+        HBox barra = new HBox(10, txtFiltro, buscar, limpar, lblResultados);
+        barra.getStyleClass().add("barra-busca");
+        barra.setAlignment(Pos.CENTER_LEFT);
+        HBox.setHgrow(txtFiltro, Priority.ALWAYS);
+        return barra;
     }
 
     private TableColumn<Campanha, Void> colunaAcoes() {
@@ -222,7 +252,7 @@ public class CampanhaObjetosView extends BorderPane {
         if (confirmar("Excluir campanha", "Deseja excluir " + campanha.getNome() + "?")) {
             try {
                 controller.remover(campanha.getId());
-                atualizarTabela();
+                filtrarTabela();
                 carregarCards();
             } catch (Exception e) {
                 alerta(Alert.AlertType.ERROR, "Erro", e.getMessage());
@@ -232,9 +262,32 @@ public class CampanhaObjetosView extends BorderPane {
 
     private void atualizarTabela() {
         try {
-            tabela.getItems().setAll(controller.listarTodos());
+            List<Campanha> campanhas = controller.listarTodos();
+            tabela.getItems().setAll(campanhas);
+            atualizarContador(campanhas.size());
         } catch (Exception e) {
             alerta(Alert.AlertType.ERROR, "Erro", e.getMessage());
+        }
+    }
+
+    private void filtrarTabela() {
+        try {
+            List<Campanha> campanhas = controller.buscarPorFiltro(txtFiltro.getText());
+            tabela.getItems().setAll(campanhas);
+            atualizarContador(campanhas.size());
+        } catch (Exception e) {
+            alerta(Alert.AlertType.ERROR, "Erro", e.getMessage());
+        }
+    }
+
+    private void limparFiltro() {
+        txtFiltro.clear();
+        atualizarTabela();
+    }
+
+    private void atualizarContador(int total) {
+        if (lblResultados != null) {
+            lblResultados.setText(total + (total == 1 ? " resultado" : " resultados"));
         }
     }
 

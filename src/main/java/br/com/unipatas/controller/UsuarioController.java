@@ -1,6 +1,8 @@
 package br.com.unipatas.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import br.com.unipatas.dao.UsuarioDAO;
 import br.com.unipatas.model.Usuario;
 import br.com.unipatas.util.CriptografiaXOR;
@@ -55,10 +57,41 @@ public class UsuarioController {
     return usuarioDAO.readAll();
   }
 
+  public List<Usuario> buscarPorFiltro(String filtro) throws Exception {
+    String termo = normalizar(filtro);
+    List<Usuario> usuarios = listarTodos();
+
+    if (termo.isEmpty()) {
+      return usuarios;
+    }
+
+    List<Usuario> encontrados = new ArrayList<>();
+    for (Usuario usuario : usuarios) {
+      if (contem(String.valueOf(usuario.getId()), termo)
+          || contem(usuario.getNome(), termo)
+          || contem(usuario.getCpf(), termo)
+          || contem(usuario.getEmail(), termo)
+          || contem(usuario.getTelefone(), termo)
+          || contem(usuario.getCidade(), termo)
+          || contem(usuario.getEstado(), termo)) {
+        encontrados.add(usuario);
+      }
+    }
+    return encontrados;
+  }
+
   private String resolverSenha(String senhaDigitada, Usuario usuarioAtual) {
     if (senhaDigitada == null || senhaDigitada.isBlank()) {
       return usuarioAtual != null ? usuarioAtual.getSenha() : CriptografiaXOR.criptografar("");
     }
     return CriptografiaXOR.criptografar(senhaDigitada);
+  }
+
+  private String normalizar(String valor) {
+    return valor == null ? "" : valor.trim().toLowerCase(Locale.ROOT);
+  }
+
+  private boolean contem(String valor, String termo) {
+    return valor != null && valor.toLowerCase(Locale.ROOT).contains(termo);
   }
 }

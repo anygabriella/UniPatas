@@ -4,6 +4,7 @@ import br.com.unipatas.view.abrigo.AbrigoGerenciamentoView;
 import br.com.unipatas.view.animal.AnimalGerenciamentoView;
 import br.com.unipatas.view.campanha.CampanhaGerenciamentoView;
 import br.com.unipatas.view.dashboard.DashboardView;
+import br.com.unipatas.view.pesquisa.PesquisaPadraoView;
 import br.com.unipatas.view.usuario.UsuarioGerenciamentoView;
 import javafx.application.Application;
 import javafx.geometry.Pos;
@@ -25,6 +26,7 @@ public class MainFX extends Application {
   private Button btnAnimais;
   private Button btnAbrigos;
   private Button btnCampanhas;
+  private Button btnPesquisaPadrao;
 
   private Button criarBotaoMenuComIcone(String texto, String caminhoIcone) {
     Image imagem = new Image(getClass().getResourceAsStream(caminhoIcone));
@@ -37,6 +39,7 @@ public class MainFX extends Application {
 
     Button botao = new Button(texto, icone);
     botao.setGraphicTextGap(10);
+    botao.setWrapText(true);
     botao.getStyleClass().add("menu-botao");
     botao.setMaxWidth(Double.MAX_VALUE);
 
@@ -81,6 +84,7 @@ public class MainFX extends Application {
     btnAnimais = criarBotaoMenuComIcone("Animais", "/br/icons/dog.png");
     btnAbrigos = criarBotaoMenuComIcone("Abrigos", "/br/icons/house-heart.png");
     btnCampanhas = criarBotaoMenuComIcone("Campanhas", "/br/icons/rocket.png");
+    btnPesquisaPadrao = criarBotaoMenuComIcone("Pesquisar por padrão (KMP / BM)", "/br/icons/pata.png");
 
     menuLateral.getChildren().addAll(
         lblTitulo,
@@ -90,7 +94,8 @@ public class MainFX extends Application {
         btnUsuarios,
         btnAnimais,
         btnAbrigos,
-        btnCampanhas
+        btnCampanhas,
+        btnPesquisaPadrao
     );
 
     layoutPrincipal.setLeft(menuLateral);
@@ -100,6 +105,7 @@ public class MainFX extends Application {
     btnAnimais.setOnAction(e -> mostrarAnimais());
     btnAbrigos.setOnAction(e -> mostrarAbrigos());
     btnCampanhas.setOnAction(e -> mostrarCampanhas());
+    btnPesquisaPadrao.setOnAction(e -> mostrarPesquisaPadrao());
 
     mostrarDashboard();
 
@@ -142,8 +148,13 @@ public class MainFX extends Application {
     ativarBotao(btnCampanhas);
   }
 
+  private void mostrarPesquisaPadrao() {
+    layoutPrincipal.setCenter(new PesquisaPadraoView());
+    ativarBotao(btnPesquisaPadrao);
+  }
+
   private void ativarBotao(Button botaoAtivo) {
-    for (Button botao : new Button[] { btnInicio, btnUsuarios, btnAnimais, btnAbrigos, btnCampanhas }) {
+    for (Button botao : new Button[] { btnInicio, btnUsuarios, btnAnimais, btnAbrigos, btnCampanhas, btnPesquisaPadrao }) {
       botao.getStyleClass().remove("menu-botao-ativo");
     }
     botaoAtivo.getStyleClass().add("menu-botao-ativo");

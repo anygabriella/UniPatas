@@ -103,22 +103,15 @@ public class CampanhaBuscaView {
 
     private void carregarCampanhas() {
         try {
-            List<Campanha> campanhas = controller.listarTodos();
-
             String filtro = txtFiltro == null
                     ? ""
-                    : txtFiltro.getText().trim().toLowerCase();
+                    : txtFiltro.getText().trim();
 
-            if (!filtro.isEmpty()) {
-                campanhas = campanhas.stream()
-                        .filter(campanha ->
-                                String.valueOf(campanha.getId()).contains(filtro)
-                                        || contem(campanha.getNome(), filtro)
-                                        || contem(campanha.getLocal(), filtro)
-                                        || contem(campanha.getData(), filtro)
-                                        || String.valueOf(campanha.getCusto()).contains(filtro)
-                        )
-                        .toList();
+            List<Campanha> campanhas;
+            if (filtro.isEmpty()) {
+                campanhas = controller.listarTodos();
+            } else {
+                campanhas = controller.buscarPorFiltro(filtro);
             }
 
             tabela.setItems(FXCollections.observableArrayList(campanhas));
@@ -130,9 +123,5 @@ public class CampanhaBuscaView {
                     "Erro ao carregar campanhas: " + e.getMessage()
             );
         }
-    }
-
-    private boolean contem(String texto, String filtro) {
-        return texto != null && texto.toLowerCase().contains(filtro);
     }
 }

@@ -2,7 +2,9 @@ package br.com.unipatas.controller;
 
 import br.com.unipatas.dao.AbrigoDAO;
 import br.com.unipatas.model.Abrigo;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class AbrigoController {
 
@@ -40,5 +42,35 @@ public class AbrigoController {
 
     public List<Abrigo> listarTodos() throws Exception {
         return dao.readAll();
-}
+    }
+
+    public List<Abrigo> buscarPorFiltro(String filtro) throws Exception {
+        String termo = normalizar(filtro);
+        List<Abrigo> abrigos = listarTodos();
+
+        if (termo.isEmpty()) {
+            return abrigos;
+        }
+
+        List<Abrigo> encontrados = new ArrayList<>();
+        for (Abrigo abrigo : abrigos) {
+            if (contem(String.valueOf(abrigo.getId()), termo)
+                    || contem(abrigo.getNome(), termo)
+                    || contem(abrigo.getendereco(), termo)
+                    || contem(abrigo.getTelefone(), termo)
+                    || contem(String.valueOf(abrigo.getCustoMensal()), termo)) {
+                encontrados.add(abrigo);
+            }
+        }
+
+        return encontrados;
+    }
+
+    private String normalizar(String valor) {
+        return valor == null ? "" : valor.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private boolean contem(String valor, String termo) {
+        return valor != null && valor.toLowerCase(Locale.ROOT).contains(termo);
+    }
 }

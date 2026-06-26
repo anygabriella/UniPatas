@@ -2,6 +2,8 @@ package br.com.unipatas.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import br.com.unipatas.casamentopadrao.BoyerMoore;
 import br.com.unipatas.dao.AnimalDAO;
 import br.com.unipatas.model.Animal;
 
@@ -44,6 +46,34 @@ public class AnimalController {
         return dao.readAll();
     }
 
+    public List<Animal> buscarPorFiltro(String filtro) throws Exception {
+        String termo = normalizar(filtro);
+        List<Animal> animais = listarTodos();
+
+        if (termo.isEmpty()) {
+            return animais;
+        }
+
+        List<Animal> encontrados = new ArrayList<>();
+        BoyerMoore boyerMoore = new BoyerMoore(termo);
+
+        for (Animal animal : animais) {
+            boolean racaEncontradaComBM = boyerMoore.buscar(normalizar(animal.getRaca()));
+
+            if (contem(String.valueOf(animal.getId()), termo)
+                    || contem(animal.getNome(), termo)
+                    || racaEncontradaComBM
+                    || contem(animal.getPorte(), termo)
+                    || contem(String.valueOf(animal.getPeso()), termo)
+                    || contem(animal.getDataAdocao(), termo)
+                    || contem(String.valueOf(animal.getIdAbrigo()), termo)) {
+                encontrados.add(animal);
+            }
+        }
+
+        return encontrados;
+    }
+
     // Método que a tela vai chamar para pesquisar a Raça usando Boyer-Moore
     public List<Animal> buscarPorRacaBoyerMoore(String padraoDaBusca) throws Exception {
 
@@ -67,5 +97,13 @@ public class AnimalController {
         }
 
         return animaisEncontrados;
+    }
+
+    private String normalizar(String valor) {
+        return valor == null ? "" : valor.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private boolean contem(String valor, String termo) {
+        return valor != null && valor.toLowerCase(Locale.ROOT).contains(termo);
     }
 }

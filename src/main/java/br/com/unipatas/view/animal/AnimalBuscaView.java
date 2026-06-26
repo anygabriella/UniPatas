@@ -111,24 +111,15 @@ public class AnimalBuscaView {
 
     private void carregarAnimais() {
         try {
-            List<Animal> animais = controller.listarTodos();
-
             String filtro = txtFiltro == null
                     ? ""
-                    : txtFiltro.getText().trim().toLowerCase();
+                    : txtFiltro.getText().trim();
 
-            if (!filtro.isEmpty()) {
-                animais = animais.stream()
-                        .filter(animal ->
-                                String.valueOf(animal.getId()).contains(filtro)
-                                        || contem(animal.getNome(), filtro)
-                                        || contem(animal.getRaca(), filtro)
-                                        || contem(animal.getPorte(), filtro)
-                                        || String.valueOf(animal.getPeso()).contains(filtro)
-                                        || contem(animal.getDataAdocao(), filtro)
-                                        || String.valueOf(animal.getIdAbrigo()).contains(filtro)
-                        )
-                        .toList();
+            List<Animal> animais;
+            if (filtro.isEmpty()) {
+                animais = controller.listarTodos();
+            } else {
+                animais = controller.buscarPorFiltro(filtro);
             }
 
             tabela.setItems(FXCollections.observableArrayList(animais));
@@ -140,9 +131,5 @@ public class AnimalBuscaView {
                     "Erro ao carregar animais: " + e.getMessage()
             );
         }
-    }
-
-    private boolean contem(String texto, String filtro) {
-        return texto != null && texto.toLowerCase().contains(filtro);
     }
 }

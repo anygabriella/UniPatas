@@ -1,7 +1,10 @@
 package br.com.unipatas.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
+import br.com.unipatas.casamentopadrao.KMP;
 import br.com.unipatas.dao.CampanhaDAO;
 import br.com.unipatas.model.Campanha;
 
@@ -42,5 +45,39 @@ public class CampanhaController {
     
     public List<Campanha> listarTodos() throws Exception {
         return dao.readAll();
+    }
+
+    public List<Campanha> buscarPorFiltro(String filtro) throws Exception {
+        String termo = normalizar(filtro);
+        List<Campanha> campanhas = listarTodos();
+
+        if (termo.isEmpty()) {
+            return campanhas;
+        }
+
+        List<Campanha> encontradas = new ArrayList<>();
+        KMP kmp = new KMP(termo);
+
+        for (Campanha campanha : campanhas) {
+            boolean nomeEncontradoComKMP = kmp.buscar(normalizar(campanha.getNome()));
+
+            if (contem(String.valueOf(campanha.getId()), termo)
+                    || nomeEncontradoComKMP
+                    || contem(campanha.getLocal(), termo)
+                    || contem(campanha.getData(), termo)
+                    || contem(String.valueOf(campanha.getCusto()), termo)) {
+                encontradas.add(campanha);
+            }
+        }
+
+        return encontradas;
+    }
+
+    private String normalizar(String valor) {
+        return valor == null ? "" : valor.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private boolean contem(String valor, String termo) {
+        return valor != null && valor.toLowerCase(Locale.ROOT).contains(termo);
     }
 }

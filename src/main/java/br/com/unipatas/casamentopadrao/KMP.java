@@ -7,14 +7,19 @@ public class KMP {
 
     // O construtor recebe o padrão e já monta a tabela de falhas (LPS)
     public KMP(String padrao) {
-        this.padrao = padrao;
-        this.tabelaFalha = construirTabelaFalha(padrao);
+        this.padrao = padrao == null ? "" : padrao;
+        this.tabelaFalha = construirTabelaFalha(this.padrao);
     }
 
     // Constrói a tabela de prefixos próprios que também são sufixos (LPS)
     private int[] construirTabelaFalha(String padrao) {
         int m = padrao.length();
         int[] lps = new int[m];
+
+        if (m == 0) {
+            return lps;
+        }
+
         int tamanho = 0; // tamanho do maior prefixo-sufixo encontrado até agora
         int i = 1;
 
@@ -42,10 +47,12 @@ public class KMP {
     // Método que faz a busca do padrão dentro de um texto
     // Retorna true se encontrou o padrão, ou false se não encontrou
     public boolean buscar(String texto) {
+        if (texto == null || padrao.isEmpty() || texto.isEmpty() || padrao.length() > texto.length()) {
+            return false;
+        }
+
         int n = texto.length();
         int m = padrao.length();
-
-        if (m == 0) return false;
 
         int i = 0; // índice no texto
         int j = 0; // índice no padrão
